@@ -21,20 +21,16 @@ class TopCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    
+
     // Top curve
     path.moveTo(0, 0);
     path.lineTo(size.width * 0.6, 0);
+    path.quadraticBezierTo(size.width * 0.7, size.height * 0.1,
+        size.width * 0.3, size.height * 0.35);
     path.quadraticBezierTo(
-      size.width * 0.7, size.height * 0.1, 
-      size.width * 0.3, size.height * 0.35
-    );
-    path.quadraticBezierTo(
-      size.width * 0.1, size.height * 0.45, 
-      0, size.height * 0.4
-    );
+        size.width * 0.1, size.height * 0.45, 0, size.height * 0.4);
     path.close();
-    
+
     return path;
   }
 
@@ -46,20 +42,16 @@ class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    
+
     // Bottom curve
     path.moveTo(size.width, size.height);
     path.lineTo(size.width, size.height * 0.6);
+    path.quadraticBezierTo(size.width * 0.9, size.height * 0.75,
+        size.width * 0.5, size.height * 0.75);
     path.quadraticBezierTo(
-      size.width * 0.9, size.height * 0.75,
-      size.width * 0.5, size.height * 0.75
-    );
-    path.quadraticBezierTo(
-      size.width * 0.3, size.height * 0.75,
-      size.width * 0.4, size.height
-    );
+        size.width * 0.3, size.height * 0.75, size.width * 0.4, size.height);
     path.close();
-    
+
     return path;
   }
 
@@ -73,7 +65,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -95,7 +87,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Top curve shape
           Positioned(
             top: 0,
@@ -109,7 +101,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Bottom curve shape
           Positioned(
             bottom: 0,
@@ -123,7 +115,7 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Content
           Center(
             child: Column(
@@ -147,16 +139,14 @@ class WelcomePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // Add route navigation once you have set up routes
-                    // Navigator.pushNamed(context, '/signin');
-                    
-                    // For now, you can use this:
-                    print('Button pressed');
+                    Navigator.pushNamed(
+                        context, '/signup'); // Navigate to Sign-Up
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
                     backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

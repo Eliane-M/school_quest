@@ -32,15 +32,15 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          'Signup',
-          style: TextStyle(color: Colors.grey),
-        ),
-      ),
+      //backgroundColor: Colors.black,
+      //appBar: AppBar(
+      //backgroundColor: Colors.transparent,
+      //elevation: 0,
+      //title: const Text(
+      //'Signup',
+      //style: TextStyle(color: Colors.grey),
+      //),
+      //),
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -60,7 +60,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Container(),
               ),
             ),
-            
+
             // Main content
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -68,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  
+
                   // Sign-Up Text
                   const Text(
                     'Sign-Up',
@@ -78,9 +78,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       color: Colors.white,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 50),
-                  
+
                   // Email Field
                   Container(
                     decoration: BoxDecoration(
@@ -102,13 +102,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Username Field
                   Container(
                     decoration: BoxDecoration(
@@ -130,13 +131,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Password Field
                   Container(
                     decoration: BoxDecoration(
@@ -159,13 +161,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Repeat Password Field
                   Container(
                     decoration: BoxDecoration(
@@ -188,13 +191,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
                       ),
                     ),
                   ),
-                  
+
                   const Spacer(),
-                  
+
                   // Login and Sign-Up buttons
                   Padding(
                     padding: const EdgeInsets.only(bottom: 40.0),
@@ -203,7 +207,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         // Login Button
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signin');
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFF9A86A),
                               foregroundColor: Colors.white,
@@ -215,13 +221,14 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             child: const Text(
                               'Login',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(width: 15),
-                        
+
                         // Sign-Up Button
                         Expanded(
                           child: ElevatedButton(
@@ -237,7 +244,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             child: const Text(
                               'Sign-Up',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                           ),
                         ),
@@ -261,36 +269,28 @@ class CurvePainter extends CustomPainter {
     final paint = Paint()
       ..color = const Color(0xFF004c6d)
       ..style = PaintingStyle.fill;
-      
+
     final path = Path();
-    
+
     // Top curve
     path.moveTo(0, 0);
     path.lineTo(size.width * 0.6, 0);
+    path.quadraticBezierTo(size.width * 0.75, size.height * 0.1,
+        size.width * 0.3, size.height * 0.25);
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.1, 
-      size.width * 0.3, size.height * 0.25
-    );
-    path.quadraticBezierTo(
-      size.width * 0.1, size.height * 0.35, 
-      0, size.height * 0.3
-    );
+        size.width * 0.1, size.height * 0.35, 0, size.height * 0.3);
     path.close();
-    
+
     // Bottom curve
     final path2 = Path();
     path2.moveTo(size.width, size.height);
     path2.lineTo(size.width, size.height * 0.5);
+    path2.quadraticBezierTo(size.width * 0.8, size.height * 0.7,
+        size.width * 0.5, size.height * 0.7);
     path2.quadraticBezierTo(
-      size.width * 0.8, size.height * 0.7,
-      size.width * 0.5, size.height * 0.7
-    );
-    path2.quadraticBezierTo(
-      size.width * 0.3, size.height * 0.7,
-      size.width * 0.4, size.height
-    );
+        size.width * 0.3, size.height * 0.7, size.width * 0.4, size.height);
     path2.close();
-    
+
     canvas.drawPath(path, paint);
     canvas.drawPath(path2, paint);
   }
