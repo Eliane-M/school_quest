@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SheTech',
+      title: 'School Quest',
       theme: ThemeData(
         fontFamily: 'Outfit',
         primaryColor: const Color(0xFF9D4EDD),

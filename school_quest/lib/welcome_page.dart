@@ -20,19 +20,7 @@ class TopCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-<<<<<<< HEAD
-    path.moveTo(0, 0);
-    path.lineTo(0, size.height * 0.7);
-    path.quadraticBezierTo(
-        size.width * 0.1, size.height * 0.6, size.width * 0.3, size.height * 0.65);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.7, size.width * 0.4, size.height * 0.35);
-    path.quadraticBezierTo(
-        size.width * 0.3, size.height * 0.1, size.width * 0.4, 0);
-    path.close();
-=======
 
-    // Top curve
     path.moveTo(0, 0);
     path.lineTo(size.width * 0.6, 0);
     path.quadraticBezierTo(size.width * 0.7, size.height * 0.1,
@@ -41,7 +29,6 @@ class TopCurveClipper extends CustomClipper<Path> {
         size.width * 0.1, size.height * 0.45, 0, size.height * 0.4);
     path.close();
 
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
     return path;
   }
 
@@ -53,28 +40,15 @@ class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-<<<<<<< HEAD
-    path.moveTo(size.width, size.height);
-    path.lineTo(size.width, size.height * 0.4);
-    path.quadraticBezierTo(
-        size.width * 0.9, size.height * 0.5, size.width * 0.7, size.height * 0.55);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.6, size.width * 0.5, size.height * 0.8);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.9, size.width * 0.6, size.height);
-    path.close();
-=======
 
-    // Bottom curve
     path.moveTo(size.width, size.height);
     path.lineTo(size.width, size.height * 0.6);
     path.quadraticBezierTo(size.width * 0.9, size.height * 0.75,
-        size.width * 0.5, size.height * 0.75);
+        size.width * 0.5, size.height * 0.85);
     path.quadraticBezierTo(
-        size.width * 0.3, size.height * 0.75, size.width * 0.4, size.height);
+        size.width * 0.3, size.height * 0.9, size.width * 0.4, size.height);
     path.close();
 
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
     return path;
   }
 
@@ -93,18 +67,11 @@ class WelcomePage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background color
           Container(
             width: double.infinity,
             height: double.infinity,
             color: const Color(0xFFE6F1FD),
           ),
-
-<<<<<<< HEAD
-          // Top-left curve
-=======
-          // Top curve shape
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Positioned(
             top: 0,
             left: 0,
@@ -117,30 +84,18 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-
-<<<<<<< HEAD
-          // Bottom-right curve
-=======
-          // Bottom curve shape
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Positioned(
-            top: 0,
+            bottom: 0,
             right: 0,
             child: ClipPath(
               clipper: BottomCurveClipper(),
               child: Container(
                 width: size.width,
-                height: size.height,
+                height: size.height * 0.5,
                 color: const Color(0xFF004c6d),
               ),
             ),
           ),
-
-<<<<<<< HEAD
-          // Center Content
-=======
-          // Content
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -170,83 +125,27 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-<<<<<<< HEAD
-
-                  const SizedBox(height: 40),
-
-                  // Updated button with InkWell for clickable behavior
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/signin');
+                  const SizedBox(height: 20.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
                     },
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 3,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 10),
-                            child: Text(
-                              'Click to get Started',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black.withOpacity(0.8),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            margin: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF004c6d),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-=======
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                        context, '/signup'); // Navigate to Sign-Up
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      elevation: 5,
                     ),
-                    elevation: 5,
-                  ),
-                  child: const Text(
-                    'Click to get Started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
+                    child: const Text(
+                      'Click to get Started',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -258,49 +157,3 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-<<<<<<< HEAD
-
-// This is the page that will be shown after clicking the button
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        backgroundColor: const Color(0xFF004c6d),
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Welcome to the App!',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF4A261),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: const Text('Go Back'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-=======
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
