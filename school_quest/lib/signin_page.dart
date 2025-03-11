@@ -173,7 +173,10 @@ class _SignInScreenState extends State<SignInScreen> {
                           
                           // Forgot Password link
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              // Navigate to Forgot Password screen
+                              Navigator.pushNamed(context, '/forgotpassword');
+                            },
                             child: const Text(
                               'Forgot Password?',
                               style: TextStyle(

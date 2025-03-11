@@ -11,30 +11,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: WelcomePage(),
-      debugShowCheckedModeBanner: false, // Removes the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-// Convert the CustomPainter to CustomClipper
 class TopCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    
-    // Top curve
     path.moveTo(0, 0);
-    path.lineTo(size.width * 0.6, 0);
+    path.lineTo(0, size.height * 0.7);
     path.quadraticBezierTo(
-      size.width * 0.7, size.height * 0.1, 
-      size.width * 0.3, size.height * 0.35
-    );
+        size.width * 0.1, size.height * 0.6, size.width * 0.3, size.height * 0.65);
     path.quadraticBezierTo(
-      size.width * 0.1, size.height * 0.45, 
-      0, size.height * 0.4
-    );
+        size.width * 0.5, size.height * 0.7, size.width * 0.4, size.height * 0.35);
+    path.quadraticBezierTo(
+        size.width * 0.3, size.height * 0.1, size.width * 0.4, 0);
     path.close();
-    
     return path;
   }
 
@@ -46,20 +40,15 @@ class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    
-    // Bottom curve
     path.moveTo(size.width, size.height);
-    path.lineTo(size.width, size.height * 0.6);
+    path.lineTo(size.width, size.height * 0.4);
     path.quadraticBezierTo(
-      size.width * 0.9, size.height * 0.75,
-      size.width * 0.5, size.height * 0.75
-    );
+        size.width * 0.9, size.height * 0.5, size.width * 0.7, size.height * 0.55);
     path.quadraticBezierTo(
-      size.width * 0.3, size.height * 0.75,
-      size.width * 0.4, size.height
-    );
+        size.width * 0.5, size.height * 0.6, size.width * 0.5, size.height * 0.8);
+    path.quadraticBezierTo(
+        size.width * 0.5, size.height * 0.9, size.width * 0.6, size.height);
     path.close();
-    
     return path;
   }
 
@@ -73,30 +62,19 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background with gradient
+          // Background color
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFA07A), // Orange shade
-                  Color(0xFFB0E0E6), // Light blue
-                  Color(0xFF4682B4), // Dark blue
-                ],
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
+            color: const Color(0xFFE6F1FD),
           ),
-          
-          // Top curve shape
+
+          // Top-left curve
           Positioned(
             top: 0,
             left: 0,
@@ -109,71 +87,153 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ),
-          
-          // Bottom curve shape
+
+          // Bottom-right curve
           Positioned(
-            bottom: 0,
+            top: 0,
             right: 0,
             child: ClipPath(
               clipper: BottomCurveClipper(),
               child: Container(
                 width: size.width,
-                height: size.height * 0.5,
+                height: size.height,
                 color: const Color(0xFF004c6d),
               ),
             ),
           ),
-          
-          // Content
+
+          // Center Content
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Welcome',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 4.0,
-                        color: Colors.black26,
-                        offset: Offset(2.0, 2.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Welc',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 48,
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFFF4A261),
+                        ),
+                      ),
+                      Text(
+                        'ome',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 48,
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFF004c6d),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Add route navigation once you have set up routes
-                    // Navigator.pushNamed(context, '/signin');
-                    
-                    // For now, you can use this:
-                    print('Button pressed');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+
+                  const SizedBox(height: 40),
+
+                  // Updated button with InkWell for clickable behavior
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/signin');
+                    },
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, right: 10),
+                            child: Text(
+                              'Click to get Started',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black.withOpacity(0.8),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            margin: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF004c6d),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    elevation: 5,
                   ),
-                  child: const Text(
-                    'Click to get Started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// This is the page that will be shown after clicking the button
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home Page'),
+        backgroundColor: const Color(0xFF004c6d),
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome to the App!',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF4A261),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
       ),
     );
   }
