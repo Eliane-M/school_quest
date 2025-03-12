@@ -20,17 +20,6 @@ class TopCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-<<<<<<< HEAD
-    path.moveTo(0, 0);
-    path.lineTo(0, size.height * 0.7);
-    path.quadraticBezierTo(
-        size.width * 0.1, size.height * 0.6, size.width * 0.3, size.height * 0.65);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.7, size.width * 0.4, size.height * 0.35);
-    path.quadraticBezierTo(
-        size.width * 0.3, size.height * 0.1, size.width * 0.4, 0);
-    path.close();
-=======
 
     // Top curve
     path.moveTo(0, 0);
@@ -41,7 +30,6 @@ class TopCurveClipper extends CustomClipper<Path> {
         size.width * 0.1, size.height * 0.45, 0, size.height * 0.4);
     path.close();
 
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
     return path;
   }
 
@@ -53,17 +41,6 @@ class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-<<<<<<< HEAD
-    path.moveTo(size.width, size.height);
-    path.lineTo(size.width, size.height * 0.4);
-    path.quadraticBezierTo(
-        size.width * 0.9, size.height * 0.5, size.width * 0.7, size.height * 0.55);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.6, size.width * 0.5, size.height * 0.8);
-    path.quadraticBezierTo(
-        size.width * 0.5, size.height * 0.9, size.width * 0.6, size.height);
-    path.close();
-=======
 
     // Bottom curve
     path.moveTo(size.width, size.height);
@@ -74,7 +51,6 @@ class BottomCurveClipper extends CustomClipper<Path> {
         size.width * 0.3, size.height * 0.75, size.width * 0.4, size.height);
     path.close();
 
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
     return path;
   }
 
@@ -100,11 +76,7 @@ class WelcomePage extends StatelessWidget {
             color: const Color(0xFFE6F1FD),
           ),
 
-<<<<<<< HEAD
-          // Top-left curve
-=======
           // Top curve shape
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Positioned(
             top: 0,
             left: 0,
@@ -118,11 +90,7 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
 
-<<<<<<< HEAD
-          // Bottom-right curve
-=======
           // Bottom curve shape
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Positioned(
             top: 0,
             right: 0,
@@ -136,11 +104,7 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
 
-<<<<<<< HEAD
-          // Center Content
-=======
           // Content
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -170,7 +134,6 @@ class WelcomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-<<<<<<< HEAD
 
                   const SizedBox(height: 40),
 
@@ -223,30 +186,6 @@ class WelcomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-=======
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                        context, '/signup'); // Navigate to Sign-Up
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: const Text(
-                    'Click to get Started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
                     ),
                   ),
                 ],
@@ -258,7 +197,6 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-<<<<<<< HEAD
 
 // This is the page that will be shown after clicking the button
 class HomePage extends StatelessWidget {
@@ -302,5 +240,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-=======
->>>>>>> 32d5cccffdcd0b17c8da29938bff14fa03c9b8e9
