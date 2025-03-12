@@ -46,9 +46,9 @@ class BottomCurveClipper extends CustomClipper<Path> {
     path.moveTo(size.width, size.height);
     path.lineTo(size.width, size.height * 0.6);
     path.quadraticBezierTo(size.width * 0.9, size.height * 0.75,
-        size.width * 0.5, size.height * 0.75);
+        size.width * 0.5, size.height * 0.85);
     path.quadraticBezierTo(
-        size.width * 0.3, size.height * 0.75, size.width * 0.4, size.height);
+        size.width * 0.3, size.height * 0.9, size.width * 0.4, size.height);
     path.close();
 
     return path;
@@ -69,7 +69,6 @@ class WelcomePage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background color
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -92,13 +91,13 @@ class WelcomePage extends StatelessWidget {
 
           // Bottom curve shape
           Positioned(
-            top: 0,
+            bottom: 0,
             right: 0,
             child: ClipPath(
               clipper: BottomCurveClipper(),
               child: Container(
                 width: size.width,
-                height: size.height,
+                height: size.height * 0.5,
                 color: const Color(0xFF004c6d),
               ),
             ),
