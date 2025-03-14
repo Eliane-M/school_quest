@@ -64,6 +64,10 @@ flutter:
   assets:
     - images/forgot_password.png
     - images/email_verification.png
+    - images/new_password.png
+    - images/successful_set.png
+    - images/gha.png
+    - images/rivi.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

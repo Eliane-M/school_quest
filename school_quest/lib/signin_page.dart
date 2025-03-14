@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       home: const SignInScreen(),
     );
@@ -40,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Center(
           child: Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height, // Fill entire screen height
+            height: MediaQuery.of(context).size.height,
             margin: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               color: const Color(0xFFF2F9FF),
@@ -59,20 +58,22 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Container(),
                   ),
                 ),
-                
+
                 // Main content
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 40),
-                      
+                      const SizedBox(height: 100),
+
                       // Sign-In Text
                       const Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.centerRight,
                         child: Padding(
-                          padding: EdgeInsets.only(left: 10.0),
+                          padding: EdgeInsets.only(
+                              right: 20.0,
+                              top: 40.0), // Adjust right padding as needed
                           child: Text(
                             'Sign-In',
                             style: TextStyle(
@@ -83,9 +84,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 40),
-                      
+
                       // Username Field
                       Container(
                         decoration: BoxDecoration(
@@ -107,13 +108,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Password Field
                       Container(
                         decoration: BoxDecoration(
@@ -136,13 +138,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               borderRadius: BorderRadius.circular(10),
                               borderSide: BorderSide.none,
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 15),
-                      
+
                       // Remember me and Forgot password row
                       Row(
                         children: [
@@ -165,42 +168,45 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Text('Remember me', style: TextStyle(fontSize: 14)),
+                              const Text('Remember me',
+                                  style: TextStyle(fontSize: 14)),
                             ],
                           ),
-                          
+
                           const Spacer(),
-                          
+
                           // Forgot Password link
                           TextButton(
                             onPressed: () {
-                              // Navigate to Forgot Password screen
                               Navigator.pushNamed(context, '/forgotpassword');
                             },
                             child: const Text(
                               'Forgot Password?',
                               style: TextStyle(
-                                color: Color(0xFF004c6d),
+                                color: Color.fromARGB(217, 0, 0, 0),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      
-                      const SizedBox(height: 30),
-                      
+
+                      const Spacer(),
+
                       // Login and Register buttons
                       Row(
                         children: [
                           // Login Button
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/userdashboard');
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFF9A86A),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -208,13 +214,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               child: const Text(
                                 'Login',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(width: 15),
-                          
+
                           // Register Button
                           Expanded(
                             child: ElevatedButton(
@@ -222,9 +229,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                 Navigator.pushNamed(context, '/signup');
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF004c6d),
+                                backgroundColor: const Color(0xFF023652),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -232,13 +240,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               child: const Text(
                                 'Register',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -252,45 +261,44 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 }
 
-// Custom painter for the curved background
+// Revised custom painter for the S-curve in upper right corner
 class CurvePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFF004c6d)
+      ..color = const Color(0xFF023652)
       ..style = PaintingStyle.fill;
-      
+
     final path = Path();
-    
-    // Top curve
+
+    // Start at upper-left
     path.moveTo(0, 0);
-    path.lineTo(size.width * 0.6, 0);
-    path.quadraticBezierTo(
-      size.width * 0.7, size.height * 0.1, 
-      size.width * 0.3, size.height * 0.35
-    );
-    path.quadraticBezierTo(
-      size.width * 0.1, size.height * 0.45, 
-      0, size.height * 0.4
-    );
+
+    // Create a wavy curve by using a cubic bezier with multiple points
+    path.cubicTo(
+        size.width * 0.2,
+        size.height * 0.3, // First control point
+        size.width * 0.4,
+        size.height * -0.1, // Second control point
+        size.width * 0.5,
+        size.height * 0.2 // First destination point
+        );
+
+    // Continue the wave
+    path.cubicTo(
+        size.width * 0.6,
+        size.height * 0.5, // Control point
+        size.width * 0.5,
+        size.height * 0.6, // Control point
+        size.width,
+        size.height * 0.7 // End at middle of right wall
+        );
+
+    // Complete the shape
+    path.lineTo(size.width, 0); // Line to top-right
     path.close();
-    
-    // Bottom curve
-    final path2 = Path();
-    path2.moveTo(size.width, size.height);
-    path2.lineTo(size.width, size.height * 0.6);
-    path2.quadraticBezierTo(
-      size.width * 0.9, size.height * 0.75,
-      size.width * 0.5, size.height * 0.75
-    );
-    path2.quadraticBezierTo(
-      size.width * 0.3, size.height * 0.75,
-      size.width * 0.4, size.height
-    );
-    path2.close();
-    
+
     canvas.drawPath(path, paint);
-    canvas.drawPath(path2, paint);
   }
 
   @override
