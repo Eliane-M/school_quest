@@ -35,6 +35,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
           Navigator.pushReplacementNamed(context, '/search');
           break;
         case 3:
+          // We're already on the help center page, so do nothing
           break;
         case 4:
           Navigator.pushReplacementNamed(context, '/profile');
@@ -65,7 +66,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                     decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                      border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade200)),
                     ),
                     child: Row(
                       children: [
@@ -76,33 +78,35 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-                  
+
                   Expanded(
                     child: Column(
                       children: [
                         // Profile Image
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 20),
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Colors.transparent,
-                            backgroundImage: AssetImage('images/email_support.png'),
+                            backgroundImage:
+                                AssetImage('images/email_support.png'),
                           ),
                           // SizedBox(height: 20),
                         ),
-                        
+
                         // Email Field
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Email", 
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              ),
+                              Text("Email",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  )),
                               SizedBox(height: 8),
                               TextField(
                                 decoration: InputDecoration(
@@ -111,25 +115,26 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 12),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        
+
                         // Full Name Field
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Full name", 
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              ),
+                              Text("Full name",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  )),
                               SizedBox(height: 8),
                               TextField(
                                 decoration: InputDecoration(
@@ -138,25 +143,26 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 12),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        
+
                         // Message Field
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Message", 
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              ),
+                              Text("Message",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  )),
                               SizedBox(height: 8),
                               TextField(
                                 maxLines: 2,
@@ -174,10 +180,11 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-                        
+
                         // Submit Button
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
                           child: SizedBox(
                             width: double.infinity,
                             height: 50,
@@ -189,14 +196,12 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text(
-                                "Submit", 
-                                style: TextStyle(
-                                  fontSize: 16, 
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                )
-                              ),
+                              child: Text("Submit",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  )),
                             ),
                           ),
                         ),
@@ -234,7 +239,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                     decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                      border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade200)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,15 +251,22 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                         ),
                         RichText(
                           text: TextSpan(
-                            style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey.shade800),
                             children: [
                               TextSpan(
                                 text: "Status:  ",
-                                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.w500),
                               ),
                               TextSpan(
                                 text: "Connected",
-                                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade600, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -262,7 +275,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Chat Header
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -271,20 +284,28 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                         CircleAvatar(
                           radius: 32,
                           backgroundColor: Colors.transparent,
-                          backgroundImage: AssetImage('images/chat_support.png'),
+                          backgroundImage:
+                              AssetImage('images/chat_support.png'),
                         ),
                         SizedBox(width: 12),
                         RichText(
                           text: TextSpan(
-                            style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey.shade800),
                             children: [
                               TextSpan(
                                 text: "Schoolquest ",
-                                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade600, fontWeight: FontWeight.w800),
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.w800),
                               ),
                               TextSpan(
                                 text: "Team",
-                                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey.shade600, fontWeight: FontWeight.normal),
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.normal),
                               ),
                             ],
                           ),
@@ -292,16 +313,17 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Timestamp
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
                       "9:51 AM",
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                      style:
+                          TextStyle(color: Colors.grey.shade500, fontSize: 12),
                     ),
                   ),
-                  
+
                   // Chat Content
                   Expanded(
                     child: ListView(
@@ -325,7 +347,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ),
                           ),
                         ),
-                        
+
                         // FAQ section
                         Container(
                           margin: EdgeInsets.only(bottom: 16),
@@ -354,7 +376,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-                        
+
                         // Final message
                         Align(
                           alignment: Alignment.centerLeft,
@@ -375,17 +397,19 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Chat Input Bar
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: Colors.grey.shade200)),
+                      border:
+                          Border(top: BorderSide(color: Colors.grey.shade200)),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.more_horiz, color: Colors.grey.shade500),
+                          icon: Icon(Icons.more_horiz,
+                              color: Colors.grey.shade500),
                           onPressed: () {},
                         ),
                         Expanded(
@@ -398,7 +422,8 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             child: TextField(
                               decoration: InputDecoration(
                                 hintText: "Type here",
-                                hintStyle: TextStyle(color: Colors.grey.shade500),
+                                hintStyle:
+                                    TextStyle(color: Colors.grey.shade500),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -411,7 +436,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Bottom padding/home indicator area
                   SizedBox(height: 10),
                   Container(
@@ -550,40 +575,122 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF023652),
-        selectedItemColor: const Color(0xFFF9A86A),
-        unselectedItemColor: Colors.white,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        elevation: 8,
-        currentIndex: _currentIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Overview"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+      bottomNavigationBar: _buildBottomNavBar(),
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        color: const Color(0xFF023652), // Updated to match the second code
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          GestureDetector(
+            onTap: () => _onItemTapped(0),
+            child:
+                _buildNavItem(Icons.home_outlined, 'Home', _currentIndex == 0),
+          ),
+          GestureDetector(
+            onTap: () => _onItemTapped(1),
+            child: _buildNavItem(
+                Icons.dashboard_outlined, 'Overview', _currentIndex == 1),
+          ),
+          GestureDetector(
+            onTap: () => _onItemTapped(2),
+            child: _buildNavItem(Icons.search, 'Search', _currentIndex == 2),
+          ),
+          GestureDetector(
+            onTap: () => _onItemTapped(3),
+            child: _buildNavItem(
+                Icons.chat_bubble_outline, 'Chat', _currentIndex == 3),
+          ),
+          GestureDetector(
+            onTap: () => _onItemTapped(4),
+            child: _buildProfileNavItem(_currentIndex == 4),
+          ),
         ],
       ),
     );
   }
-}
 
-Widget _faqItem(String text) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 8),
-    padding: EdgeInsets.symmetric(vertical: 8),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(text, style: TextStyle(fontSize: 14)),
-        Icon(Icons.chevron_right, color: Colors.grey.shade700),
+        Icon(
+          icon,
+          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
+          size: 24,
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
+            fontSize: 10,
+          ),
+        ),
       ],
-    ),
-  );
+    );
+  }
+
+  Widget _buildProfileNavItem(bool isSelected) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              'K',
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.blueGrey[900],
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Text(
+          'Profile',
+          style: TextStyle(
+            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _faqItem(String text) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(text, style: TextStyle(fontSize: 14)),
+          Icon(Icons.chevron_right, color: Colors.grey.shade700),
+        ],
+      ),
+    );
+  }
 }

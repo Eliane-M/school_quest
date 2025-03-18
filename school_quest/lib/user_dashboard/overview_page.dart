@@ -196,7 +196,7 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
               ),
             ),
             
-            // Updated Bottom navigation bar - now interactive
+            // Updated Bottom navigation bar
             Container(
               height: 60,
               decoration: BoxDecoration(
@@ -248,7 +248,7 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
       children: [
         Icon(
           icon,
-          color: isSelected ? const Color(0xFFF9A86A) : Colors.white, // Use the orange highlight from home page
+          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
           size: 24,
         ),
         Text(
