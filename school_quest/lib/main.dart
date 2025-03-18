@@ -10,8 +10,6 @@ import 'successful_set_page.dart';
 import 'user_dashboard/welcome_page.dart';
 import 'user_dashboard/overview_page.dart';
 import 'user_dashboard/help_center_page.dart';
-import 'user_dashboard/chat_popup.dart';
-import 'user_dashboard/email_popup.dart';
 import 'user_dashboard/profile_page.dart';
 
 void main() {
@@ -44,8 +42,6 @@ class MyApp extends StatelessWidget {
         '/overview': (context) => SchoolListingPage(),
         '/search': (context) => SearchPage(),
         '/helpcenter': (context) => HelpCenterPage(),
-        '/chatpopup': (context) => ChatPopup(),
-        '/emailpopup': (context) => ContactPopup(),
         '/profile': (context) => ProfilePage(),
       },
     );
