@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:school_quest/authentication/auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +30,59 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final AuthService _authService = AuthService();
+  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _repeatPasswordController = TextEditingController();
+  String? _errorMessage;
+
+  Future<void> _handleSignUp() async {
+    if (_passwordController.text != _repeatPasswordController.text) {
+      setState(() {
+        _errorMessage = "Passwords don't match";
+      });
+      return;
+    }
+
+    try {
+      await _authService.signUpWithEmail(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        name: _usernameController.text.trim(),
+      );
+      if (mounted) {
+        Navigator.pushNamed(context, '/userdashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      await _authService.signInWithGoogle();
+      if (mounted) {
+        Navigator.pushNamed(context, '/userdashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _repeatPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,6 +151,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                     child: TextField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         hintText: 'Your E-mail',
                         hintStyle: TextStyle(color: Colors.grey[400]),
@@ -127,6 +182,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                     child: TextField(
+                      controller: _usernameController,
                       decoration: InputDecoration(
                         hintText: 'Username',
                         hintStyle: TextStyle(color: Colors.grey[400]),
@@ -156,6 +212,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                     child: TextField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: 'Password',
@@ -186,6 +243,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                     child: TextField(
+                      controller: _repeatPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: 'Repeat-password',
@@ -199,6 +257,18 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+
+                  // Error message
+                  if (_errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
 
                   const Spacer(),
 
@@ -232,12 +302,40 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         const SizedBox(width: 15),
 
-                        // Sign-Up Button
+                        // Sign-Up Buttons
+                        Column(
+                          children: [
+                            ElevatedButton(
+                          onPressed: _handleGoogleSignIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              // Add Google icon here if you have one
+                              Text(
+                                'Sign up with Google',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                            ),
+                            const SizedBox(height: 10),
+                            
+
+                          ],  
+                        ),
+
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/signin');
-                            },
+                            onPressed: _handleSignUp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF023652),
                               foregroundColor: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:school_quest/user_dashboard/search_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'signin_page.dart';
 import 'welcome_page.dart';
 import 'signup_page.dart';
@@ -11,8 +12,13 @@ import 'user_dashboard/welcome_page.dart';
 import 'user_dashboard/overview_page.dart';
 import 'user_dashboard/help_center_page.dart';
 import 'user_dashboard/profile_page.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

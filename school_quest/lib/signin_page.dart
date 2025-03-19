@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:school_quest/authentication/auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,7 +30,47 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final AuthService _authService = AuthService();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool rememberMe = false;
+  String? _errorMessage;
+
+  Future<void> _handleSignIn() async {
+    try {
+      await _authService.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (mounted) {
+        Navigator.pushNamed(context, '/userdashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      await _authService.signInWithGoogle();
+      if (mounted) {
+        Navigator.pushNamed(context, '/userdashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +142,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           ],
                         ),
                         child: TextField(
+                          controller: _emailController,
                           decoration: InputDecoration(
-                            hintText: 'Username',
+                            hintText: 'Email',
                             hintStyle: TextStyle(color: Colors.grey[500]),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -130,6 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ],
                         ),
                         child: TextField(
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Password',
@@ -193,15 +236,23 @@ class _SignInScreenState extends State<SignInScreen> {
 
                       const Spacer(),
 
+                      if (_errorMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Text(
+                              _errorMessage!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+
                       // Login and Register buttons
                       Row(
                         children: [
                           // Login Button
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/userdashboard');
-                              },
+                              onPressed: _handleSignIn,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFF9A86A),
                                 foregroundColor: Colors.white,
