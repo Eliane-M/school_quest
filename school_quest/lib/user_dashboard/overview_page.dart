@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class SchoolListingPage extends StatefulWidget {
   const SchoolListingPage({super.key});
@@ -141,54 +143,30 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                     
                     // School list
                     Expanded(
-                      child: ListView(
-                        children: const [
-                          SchoolCard(
-                            name: 'Green Hills Academy',
-                            location: 'Kigali',
-                            isOpen: true,
-                          ),
-                          SchoolCard(
-                            name: 'FAWE Girls School',
-                            location: 'Gisozi',
-                            isOpen: false,
-                          ),
-                          SchoolCard(
-                            name: 'Riviera High School',
-                            location: 'Kabuga',
-                            isOpen: false,
-                          ),
-                          SchoolCard(
-                            name: 'Lycee de Kigali',
-                            location: 'Kigali',
-                            isOpen: true,
-                          ),
-                          SchoolCard(
-                            name: 'King David Academy',
-                            location: 'Kigali',
-                            isOpen: true,
-                          ),
-                          SchoolCard(
-                            name: 'Maranyundo Girls School',
-                            location: 'Bugesera',
-                            isOpen: false,
-                          ),
-                          SchoolCard(
-                            name: 'Green Hills Academy',
-                            location: 'Kigali',
-                            isOpen: true,
-                          ),
-                          SchoolCard(
-                            name: 'Petit Seminaire',
-                            location: 'Gahanga',
-                            isOpen: false,
-                          ),
-                          SchoolCard(
-                            name: 'Sainte Bernadette Save',
-                            location: 'Gisagara',
-                            isOpen: false,
-                          ),
-                        ],
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return const Center(child: Text('Error loading schools'));
+                          }
+                          if (!snapshot.hasData) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          
+                          final schools = snapshot.data!.docs;
+                          
+                          return ListView.builder(
+                            itemCount: schools.length,
+                            itemBuilder: (context, index) {
+                              final school = schools[index].data() as Map<String, dynamic>;
+                              return SchoolCard(
+                                name: school['name'] ?? 'School',
+                                location: school['location'] ?? 'Kigali',
+                                isOpen: school['admission'] ?? false,
+                              );
+                            },
+                          );
+                        },
                       ),
                     ),
                   ],
