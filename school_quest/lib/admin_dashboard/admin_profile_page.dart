@@ -19,22 +19,32 @@ class MyApp extends StatelessWidget {
             Scaffold(body: Center(child: Text('Search Page'))),
         '/helpcenter': (context) =>
             Scaffold(body: Center(child: Text('Chat Page'))),
-        '/profile': (context) => ProfilePage(),
+        '/profile': (context) => AdminProfilePage(),
+        '/admindashboard': (context) =>
+            Scaffold(body: Center(child: Text('Admin Dashboard'))),
+        '/schools': (context) =>
+            Scaffold(body: Center(child: Text('Schools Page'))),
+        '/analytics': (context) =>
+            Scaffold(body: Center(child: Text('Analytics Page'))),
+        '/forgotpassword': (context) =>
+            Scaffold(body: Center(child: Text('Forgot Password'))),
+        '/settings': (context) =>
+            Scaffold(body: Center(child: Text('Settings Page'))), // Example route
       },
-      home: ProfilePage(),
+      home: AdminProfilePage(),
     );
   }
 }
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class AdminProfilePage extends StatefulWidget {
+  const AdminProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<AdminProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  int _currentIndex = 4; // Profile tab selected by default
+class _ProfilePageState extends State<AdminProfilePage> {
+  int _currentIndex = 3; // Profile tab selected by default
 
   void _onNavItemTapped(int index) {
     if (_currentIndex != index) {
@@ -44,18 +54,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
       switch (index) {
         case 0:
-          Navigator.pushReplacementNamed(context, '/userdashboard');
+          Navigator.pushReplacementNamed(context, '/admindashboard');
           break;
         case 1:
-          Navigator.pushReplacementNamed(context, '/overview');
+          Navigator.pushReplacementNamed(context, '/schools');
           break;
         case 2:
-          Navigator.pushReplacementNamed(context, '/search');
+          Navigator.pushReplacementNamed(context, '/analytics');
           break;
         case 3:
-          Navigator.pushReplacementNamed(context, '/helpcenter');
-          break;
-        case 4:
+          // Already here
           break;
       }
     }
@@ -79,40 +87,39 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildBottomNavBar() {
     return BottomNavigationBar(
-      backgroundColor: Color(0xFF003A5D),
+      backgroundColor: const Color(0xFF003A5D),
       selectedItemColor: const Color(0xFFF9A86A),
       unselectedItemColor: Colors.white,
       showUnselectedLabels: true,
       currentIndex: _currentIndex,
       onTap: _onNavItemTapped,
       type: BottomNavigationBarType.fixed,
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
-          label: "Home",
+          label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard_outlined),
-          label: "Overview",
+          icon: Icon(Icons.school_outlined),
+          label: 'Schools',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: "Search",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
-          label: "Chat",
+          icon: Icon(Icons.analytics_outlined),
+          label: 'Analytics',
         ),
         BottomNavigationBarItem(
           icon: CircleAvatar(
-            backgroundColor:
-                _currentIndex == 4 ? Color(0xFFF9A86A) : Colors.transparent,
+            backgroundColor: const Color(0xFFF9A86A),
             radius: 14,
-            child: Text("K",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text(
+              'K',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          label: "Profile",
+          label: 'Admin Profile',
         ),
       ],
     );
@@ -135,8 +142,8 @@ class ProfileContent extends StatelessWidget {
   void _showLogoutBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent, // Makes background blend naturally
-      isScrollControlled: true, // Allows full-height customization
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -221,8 +228,8 @@ class ProfileContent extends StatelessWidget {
   void _showSwitchAccountBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent, // Makes background blend naturally
-      isScrollControlled: true, // Allows full-height customization
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -279,7 +286,7 @@ class ProfileContent extends StatelessWidget {
   void _showSwitchAsBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent, // Makes background blend naturally
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -305,15 +312,13 @@ class ProfileContent extends StatelessWidget {
             Text(
               "Switch As",
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width *
-                    0.05, // Responsive font size (5% of screen width)
+                fontSize: MediaQuery.of(context).size.width * 0.05,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 20),
             SizedBox(
-              width: double
-                  .infinity, // Responsive button width (80% of screen width)
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/userdashboard');
@@ -321,8 +326,7 @@ class ProfileContent extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[300],
                   padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height *
-                        0.02, // Responsive vertical padding
+                    vertical: MediaQuery.of(context).size.height * 0.02,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -331,8 +335,7 @@ class ProfileContent extends StatelessWidget {
                 child: Text(
                   "As User",
                   style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width *
-                        0.04, // Responsive font size (4% of screen width)
+                    fontSize: MediaQuery.of(context).size.width * 0.04,
                     color: Colors.black,
                   ),
                 ),
@@ -340,8 +343,7 @@ class ProfileContent extends StatelessWidget {
             ),
             SizedBox(height: 20),
             SizedBox(
-              width: double
-                  .infinity, // Responsive button width (80% of screen width)
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/admindashboard');
@@ -349,8 +351,7 @@ class ProfileContent extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF003A5D),
                   padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height *
-                        0.02, // Responsive vertical padding
+                    vertical: MediaQuery.of(context).size.height * 0.02,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -359,8 +360,7 @@ class ProfileContent extends StatelessWidget {
                 child: Text(
                   "As Admin",
                   style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width *
-                        0.04, // Responsive font size
+                    fontSize: MediaQuery.of(context).size.width * 0.04,
                     color: Colors.white,
                   ),
                 ),
@@ -416,14 +416,12 @@ class ProfileContent extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     SizedBox(height: 30),
-
                     // Account Options Inside the Box
-                    _buildAccountOption(
+                    _buildCustomOption(
                         context, Icons.person_outline, "Edit Profile"),
                     SizedBox(height: 15),
                     _buildAccountOption(
                         context, Icons.lock_outline, "Update Password"),
-
                     Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 64),
@@ -431,8 +429,7 @@ class ProfileContent extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            _showLogoutBottomSheet(
-                                context); // Show logout dialog
+                            _showLogoutBottomSheet(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF003A5D),
@@ -452,7 +449,6 @@ class ProfileContent extends StatelessWidget {
                   ],
                 ),
               ),
-
               // Profile Picture Positioned at the Top Center
               Positioned(
                 top: 30,
@@ -470,15 +466,13 @@ class ProfileContent extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 40),
         ],
       ),
     );
   }
 
-  Widget _buildAccountOption(
-      BuildContext context, IconData icon, String title) {
+  Widget _buildAccountOption(BuildContext context, IconData icon, String title) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[100],
@@ -494,6 +488,27 @@ class ProfileContent extends StatelessWidget {
         trailing: Icon(Icons.chevron_right, size: 20),
         onTap: () {
           Navigator.pushNamed(context, '/forgotpassword');
+        },
+      ),
+    );
+  }
+
+  Widget _buildCustomOption(BuildContext context, IconData icon, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.black),
+        title: Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        trailing: Icon(Icons.chevron_right, size: 20),
+        onTap: () {
+          Navigator.pushNamed(context, '/editprofile');
         },
       ),
     );

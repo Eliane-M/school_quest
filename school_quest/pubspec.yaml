@@ -40,7 +40,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   pin_code_fields: ^8.0.1
+  intl: ^0.20.2
+  fl_chart: ^0.70.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -70,6 +73,8 @@ flutter:
     - images/rivi.png
     - images/email_support.png
     - images/chat_support.png
+    - images/switch_account.png
+    - images/edit_profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

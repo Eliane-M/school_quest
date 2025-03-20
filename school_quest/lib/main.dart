@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:school_quest/user_dashboard/search_page.dart';
+import 'package:school_quest/admin_dashboard/add_user_page.dart';
+import 'package:school_quest/admin_dashboard/edit_profile_page.dart';
+import 'package:school_quest/admin_dashboard/school_list_page.dart';
+import 'package:school_quest/admin_dashboard/welcome_page.dart';
 import 'signin_page.dart';
 import 'welcome_page.dart';
 import 'signup_page.dart';
@@ -8,9 +11,13 @@ import 'email_verification_page.dart';
 import 'new_password_page.dart';
 import 'successful_set_page.dart';
 import 'user_dashboard/welcome_page.dart';
+import 'user_dashboard/search_page.dart';
 import 'user_dashboard/overview_page.dart';
 import 'user_dashboard/help_center_page.dart';
 import 'user_dashboard/profile_page.dart';
+import 'admin_dashboard/analytics_page.dart';
+import 'admin_dashboard/schools_page.dart';
+import 'admin_dashboard/admin_profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,6 +50,13 @@ class MyApp extends StatelessWidget {
         '/search': (context) => SearchPage(),
         '/helpcenter': (context) => HelpCenterPage(),
         '/profile': (context) => ProfilePage(),
+        '/admindashboard': (context) => AdminHomePage(),
+        '/analytics': (context) => OverviewScreen(),
+        '/schools': (context) => SchoolsDashboard(),
+        '/schoollist': (context) => SchoolListScreen(),
+        '/usermanagement': (context) => UserManagementScreen(),
+        '/editprofile': (context) => EditProfilePage(),
+        '/adminprofile': (context) => AdminProfilePage(),
       },
     );
   }
