@@ -13,6 +13,7 @@ import 'user_dashboard/overview_page.dart';
 import 'user_dashboard/help_center_page.dart';
 import 'user_dashboard/profile_page.dart';
 import 'firebase_options.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +23,45 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _initDynamicLinks();
+  }
+
+  Future<void> _initDynamicLinks() async {
+    // Handle link when app is opened from terminated state
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) {
+      _handleDynamicLink(initialLink);
+    }
+
+    // Handle links when app is in background/foreground
+    FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData dynamicLinkData) {
+      _handleDynamicLink(dynamicLinkData);
+    }).onError((error) {
+      print('Dynamic Link Failed: $error');
+    });
+  }
+
+  void _handleDynamicLink(PendingDynamicLinkData data) {
+    final Uri deepLink = data.link;
+    if (deepLink.queryParameters.containsKey('oobCode')) {
+      // Use Navigator.of(context) with root navigator to ensure navigation works
+      Navigator.of(context, rootNavigator: true).pushNamed(
+        '/newpassword',
+        arguments: {'oobCode': deepLink.queryParameters['oobCode']},
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

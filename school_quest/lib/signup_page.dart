@@ -52,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
         name: _usernameController.text.trim(),
       );
       if (mounted) {
-        Navigator.pushNamed(context, 'userdashboard');
+        Navigator.pushNamed(context, '/userdashboard');
       }
     } catch (e) {
       setState(() {
