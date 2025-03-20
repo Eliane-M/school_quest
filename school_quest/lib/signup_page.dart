@@ -52,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
         name: _usernameController.text.trim(),
       );
       if (mounted) {
-        Navigator.pushNamed(context, '/userdashboard');
+        Navigator.pushNamed(context, 'userdashboard');
       }
     } catch (e) {
       setState(() {
@@ -63,8 +63,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _handleGoogleSignIn() async {
     try {
-      await _authService.signInWithGoogle();
-      if (mounted) {
+      final userCredential = await _authService.signInWithGoogle();
+      if (userCredential != null && mounted) {
         Navigator.pushNamed(context, '/userdashboard');
       }
     } catch (e) {
@@ -272,88 +272,56 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   const Spacer(),
 
-                  // Login and Sign-Up buttons
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 40.0),
-                    child: Row(
-                      children: [
-                        // Login Button
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/userdashboard');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF9A86A),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
-                            ),
+                  // Sign-Up Buttons
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _handleSignUp,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF023652),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
+                          elevation: 0,
                         ),
-
-                        const SizedBox(width: 15),
-
-                        // Sign-Up Buttons
-                        Column(
+                        child: const Text(
+                          'Sign-Up',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: _handleGoogleSignIn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ElevatedButton(
-                          onPressed: _handleGoogleSignIn,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                            Image.asset(
+                              'images/google.png',
+                              height: 20,
+                              width: 24,
                             ),
-                            elevation: 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              // Add Google icon here if you have one
-                              Text(
-                                'Sign up with Google',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
+                            Text(
+                              'Sign up with Google',
+                              style: TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(height: 10),
-                            
-
-                          ],  
+                          ],
                         ),
-
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _handleSignUp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF023652),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Sign-Up',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
                 ],
               ),
