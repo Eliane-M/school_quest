@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:school_quest/authentication/auth.dart';
+import 'package:school_quest/signin_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
         '/helpcenter': (context) =>
             Scaffold(body: Center(child: Text('Chat Page'))),
         '/profile': (context) => ProfilePage(),
+        '/signin': (context) => SignInScreen(),
       },
       home: ProfilePage(),
     );
@@ -34,7 +37,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _currentIndex = 4; // Profile tab selected by default
+  int _currentIndex = 4;
 
   void _onNavItemTapped(int index) {
     if (_currentIndex != index) {
@@ -119,8 +122,47 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class ProfileContent extends StatelessWidget {
+class ProfileContent extends StatefulWidget {
   const ProfileContent({super.key});
+
+  @override
+  State<ProfileContent> createState() => _ProfileContentState();
+}
+
+  class _ProfileContentState extends State<ProfileContent> {
+  bool _isSigningOut = false; 
+  final AuthService _authService = AuthService();
+
+  // Logout function
+  Future<void> _handleLogout() async {
+    if (!mounted) {
+    print("Widget is not mounted, aborting logout");
+    return;
+  }
+    setState(() {
+      _isSigningOut = true;
+    });
+
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/signin',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isSigningOut = false;
+      });
+      // Optionally show an error message
+      print('Logout error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $e')),
+      );
+    }
+  }
 
   void showBottomSheet(BuildContext context, Widget child) {
     showModalBottomSheet(
@@ -132,7 +174,7 @@ class ProfileContent extends StatelessWidget {
     );
   }
 
-  void _showLogoutBottomSheet(BuildContext context) {
+  void showLogoutBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent, // Makes background blend naturally
@@ -379,11 +421,9 @@ class ProfileContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Profile Card with Account Options Inside
           Stack(
             alignment: Alignment.topCenter,
             children: [
-              // Extended Profile Box
               Container(
                 margin: EdgeInsets.only(top: 70),
                 padding:
@@ -403,37 +443,29 @@ class ProfileContent extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(height: 20),
-                    // Profile Name
                     Text(
                       "Milly K",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 5),
-                    // Profile Email
                     Text(
                       "khanah250@gmail.com",
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     SizedBox(height: 30),
-
-                    // Account Options Inside the Box
                     _buildAccountOption(
                         context, Icons.person_outline, "Edit Profile"),
                     SizedBox(height: 15),
                     _buildAccountOption(
                         context, Icons.lock_outline, "Update Password"),
-
                     Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 64),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            _showLogoutBottomSheet(
-                                context); // Show logout dialog
-                          },
+                          onPressed: _isSigningOut ? null : _handleLogout,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF003A5D),
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -441,10 +473,13 @@ class ProfileContent extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text(
-                            "LOG OUT",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                          child: _isSigningOut
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : Text(
+                                  "LOG OUT",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.white),
+                                ),
                         ),
                       ),
                     ),
@@ -452,8 +487,6 @@ class ProfileContent extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Profile Picture Positioned at the Top Center
               Positioned(
                 top: 30,
                 child: CircleAvatar(
@@ -470,7 +503,6 @@ class ProfileContent extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 40),
         ],
       ),

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "567603529364",
+    "project_id": "schoolquest-d6b11",
+    "storage_bucket": "schoolquest-d6b11.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567603529364:android:8819b1e70ace0371e61681",
+        "android_client_info": {
+          "package_name": "com.example.school_quest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567603529364-cvs1vtdos3osjiouuebiamr8a7b3e9go.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.school_quest",
+            "certificate_hash": "c8177687908f535dd8319d2dca57ce27c19c1ca5"
+          }
+        },
+        {
+          "client_id": "567603529364-knir8c9umjudr4di8nvq1ohlhebosjgt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC97OUoA69LlXk7UShpOA0np0Q5JDGWPdg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567603529364-knir8c9umjudr4di8nvq1ohlhebosjgt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "567603529364-vkre3ikmghajildgktadt24977ftka7k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.schoolQuest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

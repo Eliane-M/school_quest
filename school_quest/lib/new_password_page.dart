@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,7 +8,8 @@ void main() {
 }
 
 class SetNewPasswordPage extends StatefulWidget {
-  const SetNewPasswordPage({super.key});
+  final Map<String, dynamic>? arguments;
+  const SetNewPasswordPage({super.key, this.arguments});
 
   @override
   _SetNewPasswordPageState createState() => _SetNewPasswordPageState();
@@ -15,11 +17,61 @@ class SetNewPasswordPage extends StatefulWidget {
 
 class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+  bool _isLoading = false;
+
+  Future<void> _updatePassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final oobCode = widget.arguments?['oobCode'] as String?;
+      if (oobCode != null) {
+        // Verify the reset code
+        final email = await _auth.verifyPasswordResetCode(oobCode);
+        // Update password
+        await _auth.confirmPasswordReset(
+          code: oobCode,
+          newPassword: _passwordController.text,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Password updated successfully")),
+        );
+        Navigator.pushNamed(context, '/successfulset');
+      } else {
+        throw Exception('Invalid reset link');
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'An error occurred';
+      switch (e.code) {
+        case 'expired-action-code':
+          errorMessage = 'The reset link has expired';
+          break;
+        case 'invalid-action-code':
+          errorMessage = 'The reset link is invalid';
+          break;
+        case 'user-disabled':
+          errorMessage = 'This account has been disabled';
+          break;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +124,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                    // Handle support action
-                    Navigator.pushNamed(context, '/successfulset');
-                    },
+                    onPressed: _isLoading ? null : _updatePassword,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[900],
                       shape: RoundedRectangleBorder(
@@ -169,7 +218,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
     );
   }
 
-  void _savePassword() {
+  void savePassword() {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
@@ -136,14 +137,30 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                   // Fixed horizontal scrolling
                   SizedBox(
                     height: 250,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        schoolCard("Green Hills Academy", "images/gha.png"),
-                        schoolCard("Riviera High School", "images/rivi.png"),
-                        schoolCard("Green Hills Academy", "images/gha.png"),
-                      ],
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const Center(child: Text('Error loading schools'));
+                        }
+                        if (!snapshot.hasData) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        final schools = snapshot.data!.docs;
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: schools.length,
+                          itemBuilder: (context, index) {
+                            final school = schools[index].data() as Map<String, dynamic>;
+                            return schoolCard(
+                              school['name'] ?? 'School',
+                              school['image'] ?? 'https://via.placeholder.com/150',
+                              school['description'] ?? 'No description available',
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -154,16 +171,32 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  reviewCard(
-                      "Green Hills Academy",
-                      "The teachers are very supportive, and the extracurricular activities are amazing. Aline M., Parent",
-                      "4.5 (123 Reviews)",
-                      "images/gha.png"),
-                  reviewCard(
-                      "Riviera High School",
-                      "Great academic programms and leadership training. I loved my expereience here. Kevin N., Former Student",
-                      "4.3 (152 Reviews)",
-                      "images/rivi.png"),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('reviews').snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return const Center(child: Text('Error loading reviews'));
+                      }
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final reviews = snapshot.data!.docs;
+                      return Column(
+                        children: reviews.map((reviewDoc) {
+                          final review = reviewDoc.data() as Map<String, dynamic>;
+                          return reviewCard(
+                            review['schoolName'] ?? 'Unknown School',
+                            review['review'] ?? 'No review available',
+                            review['rating'] ?? 'N/A',
+                            review['reviewer'] ?? 'Anonymous',
+                            review['reviewNumber'] ?? 0,
+                            review['reviewerRole'] ?? 'Unknown Role',
+                            review['image'] ?? 'https://via.placeholder.com/150',
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -272,7 +305,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
   }
 
   // Function for School Cards
-  Widget schoolCard(String title, String imagePath) {
+  Widget schoolCard(String name, String image, String description) {
     return Container(
       width: 200,
       margin: const EdgeInsets.only(right: 15),
@@ -288,7 +321,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.asset(imagePath,
+            child: Image.asset(image,
                 height: 100, width: double.infinity, fit: BoxFit.cover),
           ),
           Padding(
@@ -296,13 +329,13 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
+                Text(name,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 5),
-                const Text(
-                  "One of the top schools offering excellent education.",
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                Text(
+                  description,
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
                 const SizedBox(height: 5),
                 ElevatedButton(
@@ -326,7 +359,8 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
 
   // Function for Review Cards
   Widget reviewCard(
-      String schoolName, String reviewer, String rating, String imagePath) {
+      String schoolName, String review, String rating, String reviewer,
+      String reviewNumber, String reviewerRole, String image) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
@@ -340,20 +374,20 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child:
-              Image.asset(imagePath, width: 60, height: 60, fit: BoxFit.cover),
+              Image.asset(image, width: 60, height: 60, fit: BoxFit.cover),
         ),
         title: Text(schoolName,
             style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(reviewer, style: const TextStyle(color: Colors.black54)),
+            Text('$review - $reviewer, $reviewerRole', style: const TextStyle(color: Colors.black54)),
             const SizedBox(height: 5),
             Row(
               children: [
                 const Icon(Icons.star, color: Color(0xFFF9A86A), size: 16),
                 const SizedBox(width: 5),
-                Text(rating,
+                Text('$rating ($reviewNumber Reviews)',
                     style:
                         const TextStyle(fontSize: 12, color: Colors.black54)),
               ],
