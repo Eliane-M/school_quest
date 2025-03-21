@@ -5,6 +5,7 @@ import 'package:school_quest/admin_dashboard/school_list_page.dart';
 import 'package:school_quest/admin_dashboard/welcome_page.dart';
 import 'package:school_quest/user_dashboard/search_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:school_quest/user_dashboard/user_profile_edit.dart';
 import 'signin_page.dart';
 import 'welcome_page.dart';
 import 'signup_page.dart';
@@ -94,6 +95,7 @@ class _MyAppState extends State<MyApp> {
         '/search': (context) => SearchPage(),
         '/helpcenter': (context) => HelpCenterPage(),
         '/profile': (context) => ProfilePage(),
+        '/usereditprofile': (context) => UserEditProfilePage(),
         '/admindashboard': (context) => AdminHomePage(),
         '/analytics': (context) => OverviewScreen(),
         '/schools': (context) => SchoolsDashboard(),

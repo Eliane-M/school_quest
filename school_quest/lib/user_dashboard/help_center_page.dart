@@ -48,7 +48,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFFE6F1FD),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.85,

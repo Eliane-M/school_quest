@@ -262,7 +262,7 @@ class ProfileContent extends StatelessWidget {
                 child: Text("M", style: TextStyle(color: Color(0xFF003A5D))),
               ),
               title: Text("mickie250@gmail.com"),
-              trailing: Icon(Icons.circle, color: Colors.orange),
+              trailing: Icon(Icons.circle, color: Color(0xFFF9A86A)),
             ),
             SizedBox(height: 10),
             TextButton.icon(

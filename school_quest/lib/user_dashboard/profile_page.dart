@@ -357,9 +357,7 @@ class ProfileContent extends StatefulWidget {
               width: double
                   .infinity, // Responsive button width (80% of screen width)
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/userdashboard');
-                },
+                onPressed: _isSigningOut ? null : _handleLogout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[300],
                   padding: EdgeInsets.symmetric(
@@ -454,7 +452,7 @@ class ProfileContent extends StatefulWidget {
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     SizedBox(height: 30),
-                    _buildAccountOption(
+                    _buildCustomOption(
                         context, Icons.person_outline, "Edit Profile"),
                     SizedBox(height: 15),
                     _buildAccountOption(
@@ -465,7 +463,9 @@ class ProfileContent extends StatefulWidget {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _isSigningOut ? null : _handleLogout,
+                          onPressed: () {
+                            showLogoutBottomSheet(context);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF003A5D),
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -510,7 +510,7 @@ class ProfileContent extends StatefulWidget {
   }
 
   Widget _buildAccountOption(
-      BuildContext context, IconData icon, String title) {
+    BuildContext context, IconData icon, String title) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[100],
@@ -526,6 +526,27 @@ class ProfileContent extends StatefulWidget {
         trailing: Icon(Icons.chevron_right, size: 20),
         onTap: () {
           Navigator.pushNamed(context, '/forgotpassword');
+        },
+      ),
+    );
+  }
+
+  Widget _buildCustomOption(BuildContext context, IconData icon, String title) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.black),
+        title: Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        trailing: Icon(Icons.chevron_right, size: 20),
+        onTap: () {
+          Navigator.pushNamed(context, '/usereditprofile');
         },
       ),
     );
