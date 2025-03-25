@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:school_quest/authentication/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:school_quest/authentication/auth.dart'; // Your AuthService
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +19,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins',
       ),
+      initialRoute: '/signin',
+      routes: {
+        '/signin': (context) => const SignInScreen(),
+        '/signup': (context) =>
+            Scaffold(body: Center(child: Text('Sign Up Page'))),
+        '/forgotpassword': (context) =>
+            Scaffold(body: Center(child: Text('Forgot Password Page'))),
+        '/userdashboard': (context) =>
+            Scaffold(body: Center(child: Text('User Dashboard'))),
+        '/admindashboard': (context) =>
+            Scaffold(body: Center(child: Text('Admin Dashboard'))),
+      },
       home: const SignInScreen(),
     );
   }
@@ -38,12 +52,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _authService.signInWithEmailAndPassword(
+      // Get UserCredential from sign-in
+      UserCredential? userCredential = await _authService.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      if (mounted) {
-        Navigator.pushNamed(context, '/userdashboard');
+      // Extract User from UserCredential
+      User? user = userCredential?.user;
+      if (user != null && mounted) {
+        await _navigateBasedOnRole(user);
       }
     } catch (e) {
       setState(() {
@@ -54,13 +71,47 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> handleGoogleSignIn() async {
     try {
-      await _authService.signInWithGoogle();
-      if (mounted) {
-        Navigator.pushNamed(context, '/userdashboard');
+      // Get UserCredential from Google sign-in
+      UserCredential? userCredential = await _authService.signInWithGoogle();
+      // Extract User from UserCredential
+      User? user = userCredential?.user;
+      if (user != null && mounted) {
+        await _navigateBasedOnRole(user);
       }
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
+      });
+    }
+  }
+
+  Future<void> _navigateBasedOnRole(User user) async {
+    try {
+      // Fetch user role from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        String? role = userDoc.get('role') as String?;
+        if (role == 'admin') {
+          Navigator.pushReplacementNamed(context, '/admindashboard');
+        } else if (role == 'student') {
+          Navigator.pushReplacementNamed(context, '/userdashboard');
+        } else {
+          setState(() {
+            _errorMessage = 'Unknown user role';
+          });
+        }
+      } else {
+        setState(() {
+          _errorMessage = 'User data not found';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error fetching user role: $e';
       });
     }
   }
@@ -88,7 +139,6 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
             child: Stack(
               children: [
-                // Background design elements
                 Positioned(
                   top: 0,
                   right: 0,
@@ -99,144 +149,123 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Container(),
                   ),
                 ),
-
-                // Main content
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 100),
-
-                      // Sign-In Text
-                      const Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              right: 20.0,
-                              top: 40.0), // Adjust right padding as needed
-                          child: Text(
-                            'Sign-In',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // Username Field
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Password Field
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      // Remember me and Forgot password row
-                      Row(
-                        children: [
-                          // Remember me checkbox
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Checkbox(
-                                  value: rememberMe,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      rememberMe = value ?? false;
-                                    });
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 100),
+                        const Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 20.0, top: 40.0),
+                            child: Text(
+                              'Sign-In',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                              const SizedBox(width: 8),
-                              const Text('Remember me',
-                                  style: TextStyle(fontSize: 14)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
                             ],
                           ),
-
-                          const Spacer(),
-
-                          // Forgot Password link
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/forgotpassword');
-                            },
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(
-                                color: Color.fromARGB(217, 0, 0, 0),
-                                fontWeight: FontWeight.w500,
+                          child: TextField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              hintText: 'Email',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
                               ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 16),
                             ),
                           ),
-                        ],
-                      ),
-
-                      const Spacer(),
-
-                      if (_errorMessage != null)
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Row(
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Checkbox(
+                                    value: rememberMe,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        rememberMe = value ?? false;
+                                      });
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Text('Remember me',
+                                    style: TextStyle(fontSize: 14)),
+                              ],
+                            ),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/forgotpassword');
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Color.fromARGB(217, 0, 0, 0),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_errorMessage != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 15),
                             child: Text(
@@ -245,62 +274,58 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                           ),
                         const SizedBox(height: 20),
-
-                      // Login and Register buttons
-                      Row(
-                        children: [
-                          // Login Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _handleSignIn,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFF9A86A),
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: _handleSignIn,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF9A86A),
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
                                 ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'Login',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                child: const Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
                               ),
                             ),
-                          ),
-
-                          const SizedBox(width: 15),
-
-                          // Register Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/signup');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF023652),
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/signup');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF023652),
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
                                 ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'Register',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                child: const Text(
+                                  'Register',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 20), // Bottom padding
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -322,31 +347,24 @@ class CurvePainter extends CustomPainter {
 
     final path = Path();
 
-    // Start at upper-left
     path.moveTo(0, 0);
-
-    // Create a wavy curve by using a cubic bezier with multiple points
     path.cubicTo(
-        size.width * 0.2,
-        size.height * 0.3, // First control point
-        size.width * 0.4,
-        size.height * -0.1, // Second control point
-        size.width * 0.5,
-        size.height * 0.2 // First destination point
-        );
-
-    // Continue the wave
+      size.width * 0.2,
+      size.height * 0.3,
+      size.width * 0.4,
+      size.height * -0.1,
+      size.width * 0.5,
+      size.height * 0.2,
+    );
     path.cubicTo(
-        size.width * 0.6,
-        size.height * 0.5, // Control point
-        size.width * 0.5,
-        size.height * 0.6, // Control point
-        size.width,
-        size.height * 0.7 // End at middle of right wall
-        );
-
-    // Complete the shape
-    path.lineTo(size.width, 0); // Line to top-right
+      size.width * 0.6,
+      size.height * 0.5,
+      size.width * 0.5,
+      size.height * 0.6,
+      size.width,
+      size.height * 0.7,
+    );
+    path.lineTo(size.width, 0);
     path.close();
 
     canvas.drawPath(path, paint);

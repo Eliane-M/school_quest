@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -15,6 +20,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFE6F1FD),
       ),
+      initialRoute: '/schools',
+      routes: {
+        '/admindashboard': (context) =>
+            Scaffold(body: Center(child: Text('Admin Dashboard'))),
+        '/schools': (context) => const SchoolListScreen(),
+        '/analytics': (context) =>
+            Scaffold(body: Center(child: Text('Analytics Page'))),
+        '/adminprofile': (context) =>
+            Scaffold(body: Center(child: Text('Admin Profile Page'))),
+        '/usermanagement': (context) =>
+            Scaffold(body: Center(child: Text('User Management Page'))),
+      },
       home: const SchoolListScreen(),
     );
   }
@@ -29,13 +46,29 @@ class SchoolListScreen extends StatefulWidget {
 
 class _SchoolListScreenState extends State<SchoolListScreen> {
   int _currentIndex = 1; // Schools tab selected
+  String? _username; // To store the username
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
 
-    // Navigation logic
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/admindashboard');
@@ -59,15 +92,9 @@ class _SchoolListScreenState extends State<SchoolListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Arrow
             Padding(
               padding: const EdgeInsets.only(left: 16.0, top: 16.0),
-              // child: IconButton(
-              //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-              //   onPressed: () {},
-              // ),
             ),
-            // Registered Schools and Add User Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -86,7 +113,7 @@ class _SchoolListScreenState extends State<SchoolListScreen> {
                       Navigator.pushNamed(context, '/usermanagement');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF9A86A), // Orange
+                      backgroundColor: const Color(0xFFF9A86A),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -108,14 +135,39 @@ class _SchoolListScreenState extends State<SchoolListScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // School List
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: schoolsList.length,
-                itemBuilder: (context, index) {
-                  final school = schoolsList[index];
-                  return SchoolCard(school: school);
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('schools')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading schools'));
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final schools = snapshot.data!.docs;
+
+                  if (schools.isEmpty) {
+                    return const Center(child: Text('No schools found'));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    itemCount: schools.length,
+                    itemBuilder: (context, index) {
+                      final schoolData =
+                          schools[index].data() as Map<String, dynamic>;
+                      final school = School(
+                        name: schoolData['name'] ?? 'Unknown School',
+                        description: schoolData['description'] ??
+                            'No description available',
+                      );
+                      return SchoolCard(school: school);
+                    },
+                  );
                 },
               ),
             ),
@@ -130,7 +182,7 @@ class _SchoolListScreenState extends State<SchoolListScreen> {
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: 'Home',
@@ -145,12 +197,15 @@ class _SchoolListScreenState extends State<SchoolListScreen> {
           ),
           BottomNavigationBarItem(
             icon: CircleAvatar(
-              backgroundColor: Colors.white,
+              backgroundColor:
+                  _currentIndex == 3 ? Color(0xFFF9A86A) : Colors.transparent,
               radius: 14,
               child: Text(
-                'K',
+                _username?.isNotEmpty == true
+                    ? _username![0].toUpperCase()
+                    : "U",
                 style: TextStyle(
-                  color: const Color(0xFF003A5D),
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -172,54 +227,6 @@ class School {
     required this.description,
   });
 }
-
-final List<School> schoolsList = [
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Riviera High School',
-    description:
-        'Riviera High School delivers a rigorous combined education characterized by relentless teaching with bold thinking values.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Riviera High School',
-    description:
-        'Riviera High School delivers a rigorous combined education characterized by relentless teaching with bold thinking values.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-  School(
-    name: 'Green Hills Academy',
-    description:
-        'Green Hills Academy nurtures a community of caring, inquisitive, and principled learners who pursue excellence and contribute to our equitable world.',
-  ),
-];
 
 class SchoolCard extends StatelessWidget {
   final School school;

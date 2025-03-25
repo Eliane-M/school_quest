@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,9 +19,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/userdashboard',
       routes: {
         '/userdashboard': (context) => SchoolHomePage(),
-        '/search': (context) => Scaffold(body: Center(child: Text('Search Page'))),
-        '/chatpopup': (context) => Scaffold(body: Center(child: Text('Chat Page'))),
-        '/profile': (context) => Scaffold(body: Center(child: Text('Profile Page'),),),
+        '/search': (context) =>
+            Scaffold(body: Center(child: Text('Search Page'))),
+        '/chatpopup': (context) =>
+            Scaffold(body: Center(child: Text('Chat Page'))),
+        '/profile': (context) =>
+            Scaffold(body: Center(child: Text('Profile Page'))),
       },
       home: SchoolHomePage(),
     );
@@ -32,28 +40,43 @@ class SchoolHomePage extends StatefulWidget {
 
 class _SchoolHomePageState extends State<SchoolHomePage> {
   int _currentIndex = 0;
+  String? _username; // To store the username
 
-  // This handles navigation without actually pushing new routes
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
+
   void _onItemTapped(int index) {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
       });
 
-      // Navigate based on the index
       switch (index) {
-        case 0: // Home
+        case 0:
           break;
-        case 1: // Overview
+        case 1:
           Navigator.pushReplacementNamed(context, '/overview');
           break;
-        case 2: // Search
+        case 2:
           Navigator.pushReplacementNamed(context, '/search');
           break;
-        case 3: // Chat
+        case 3:
           Navigator.pushReplacementNamed(context, '/helpcenter');
           break;
-        case 4: // Profile
+        case 4:
           Navigator.pushReplacementNamed(context, '/profile');
           break;
       }
@@ -63,15 +86,14 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE6F1FD), // Light blue background
+      backgroundColor: const Color(0xFFE6F1FD),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Section
             Container(
               decoration: const BoxDecoration(
-                color: Color(0xFFFFB87A), // Orange background
+                color: Color(0xFFFFB87A),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
@@ -94,7 +116,6 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                         color: Colors.white),
                   ),
                   const SizedBox(height: 20),
-                  // Search Bar
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -119,8 +140,6 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                 ],
               ),
             ),
-
-            // Recommended Schools Section
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -134,11 +153,12 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  // Fixed horizontal scrolling
                   SizedBox(
                     height: 250,
                     child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+                      stream: FirebaseFirestore.instance
+                          .collection('schools')
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return const Center(child: Text('Error loading schools'));
@@ -152,7 +172,8 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                           physics: const BouncingScrollPhysics(),
                           itemCount: schools.length,
                           itemBuilder: (context, index) {
-                            final school = schools[index].data() as Map<String, dynamic>;
+                            final school =
+                                schools[index].data() as Map<String, dynamic>;
                             return schoolCard(
                               school['name'] ?? 'School',
                               school['image'] ?? 'https://via.placeholder.com/150',
@@ -164,15 +185,15 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Students & Parents Review Section
                   const Text(
                     "Students & Parents Review",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
                   StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('reviews').snapshots(),
+                    stream: FirebaseFirestore.instance
+                        .collection('reviews')
+                        .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return const Center(child: Text('Error loading reviews'));
@@ -183,13 +204,14 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                       final reviews = snapshot.data!.docs;
                       return Column(
                         children: reviews.map((reviewDoc) {
-                          final review = reviewDoc.data() as Map<String, dynamic>;
+                          final review =
+                              reviewDoc.data() as Map<String, dynamic>;
                           return reviewCard(
                             review['schoolName'] ?? 'Unknown School',
                             review['review'] ?? 'No review available',
                             review['rating'] ?? 'N/A',
                             review['reviewer'] ?? 'Anonymous',
-                            review['reviewNumber'] ?? 0,
+                            review['reviewNumber']?.toString() ?? '0',
                             review['reviewerRole'] ?? 'Unknown Role',
                             review['image'] ?? 'https://via.placeholder.com/150',
                           );
@@ -203,108 +225,53 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
           ],
         ),
       ),
-
-      // Updated Bottom Navigation Bar with custom design
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: const Color(0xFF023652),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, -1),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF003A5D), // Match ProfilePage
+        selectedItemColor: const Color(0xFFF9A86A),
+        unselectedItemColor: Colors.white,
+        showUnselectedLabels: true,
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            label: 'Overview',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: CircleAvatar(
+              backgroundColor:
+                  _currentIndex == 4 ? Color(0xFFF9A86A) : Colors.transparent,
+              radius: 14,
+              child: Text(
+                _username?.isNotEmpty == true
+                    ? _username![0].toUpperCase()
+                    : "U",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              onTap: () => _onItemTapped(0),
-              child: _buildNavItem(Icons.home, 'Home', _currentIndex == 0),
-            ),
-            GestureDetector(
-              onTap: () => _onItemTapped(1),
-              child: _buildNavItem(
-                  Icons.dashboard_outlined, 'Overview', _currentIndex == 1),
-            ),
-            GestureDetector(
-              onTap: () => _onItemTapped(2),
-              child: _buildNavItem(Icons.search, 'Search', _currentIndex == 2),
-            ),
-            GestureDetector(
-              onTap: () => _onItemTapped(3),
-              child: _buildNavItem(
-                  Icons.chat_bubble_outline, 'Chat', _currentIndex == 3),
-            ),
-            GestureDetector(
-              onTap: () => _onItemTapped(4),
-              child: _buildProfileNavItem(_currentIndex == 4),
-            ),
-          ],
-        ),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
 
-  // Custom navigation item builder
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-          size: 24,
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Custom profile navigation item
-  Widget _buildProfileNavItem(bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              'K',
-              style: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF023652),
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        Text(
-          'Profile',
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Function for School Cards
   Widget schoolCard(String name, String image, String description) {
     return Container(
       width: 200,
@@ -321,8 +288,18 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.asset(image,
-                height: 100, width: double.infinity, fit: BoxFit.cover),
+            child: Image.network(
+              image,
+              height: 100,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Image.network(
+                'https://via.placeholder.com/150',
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -357,10 +334,8 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
     );
   }
 
-  // Function for Review Cards
-  Widget reviewCard(
-      String schoolName, String review, String rating, String reviewer,
-      String reviewNumber, String reviewerRole, String image) {
+  Widget reviewCard(String schoolName, String review, String rating,
+      String reviewer, String reviewNumber, String reviewerRole, String image) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
@@ -373,15 +348,26 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
       child: ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child:
-              Image.asset(image, width: 60, height: 60, fit: BoxFit.cover),
+          child: Image.network(
+            image,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Image.network(
+              'https://via.placeholder.com/150',
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         title: Text(schoolName,
             style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('$review - $reviewer, $reviewerRole', style: const TextStyle(color: Colors.black54)),
+            Text('$review - $reviewer, $reviewerRole',
+                style: const TextStyle(color: Colors.black54)),
             const SizedBox(height: 5),
             Row(
               children: [

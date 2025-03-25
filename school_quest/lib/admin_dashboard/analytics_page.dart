@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +18,16 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFE6F1FD),
       ),
+      initialRoute: '/overview',
+      routes: {
+        '/overview': (context) => const OverviewScreen(),
+        '/admindashboard': (context) =>
+            Scaffold(body: Center(child: Text('Admin Dashboard'))),
+        '/schools': (context) =>
+            Scaffold(body: Center(child: Text('Schools Page'))),
+        '/adminprofile': (context) =>
+            Scaffold(body: Center(child: Text('Admin Profile Page'))),
+      },
       home: const OverviewScreen(),
     );
   }
@@ -30,6 +42,39 @@ class OverviewScreen extends StatefulWidget {
 
 class _OverviewScreenState extends State<OverviewScreen> {
   int _currentIndex = 2; // Analytics tab selected
+  String _firstLetter = 'K'; // Default letter until username is fetched
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsername();
+  }
+
+  Future<void> _fetchUsername() async {
+    try {
+      // Get the current user from Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Fetch the user's data from Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          String? username = userDoc.get('name') as String?;
+          if (username != null && username.isNotEmpty) {
+            setState(() {
+              _firstLetter = username[0].toUpperCase();
+            });
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+      // Keep default letter if there's an error
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -63,9 +108,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Add space at the top (where the back arrow would be)
               const SizedBox(height: 16),
-              // Overview Title (centered)
               const Center(
                 child: Text(
                   'Overview',
@@ -77,10 +120,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Stats Cards
               Row(
                 children: [
-                  // Money Earned Card
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(16),
@@ -125,7 +166,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Registered Schools Card
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(16),
@@ -172,7 +212,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              // Spendings vs Earnings Chart
               const Text(
                 'Spendings vs Earnings',
                 style: TextStyle(
@@ -239,7 +278,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text('Earnings', style: TextStyle(fontSize: 12)),
+                              const Text('Earnings',
+                                  style: TextStyle(fontSize: 12)),
                             ],
                           ),
                           const SizedBox(width: 16),
@@ -254,7 +294,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text('Spendings', style: TextStyle(fontSize: 12)),
+                              const Text('Spendings',
+                                  style: TextStyle(fontSize: 12)),
                             ],
                           ),
                         ],
@@ -264,7 +305,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Users Engagement
               const Text(
                 'Users Engagement',
                 style: TextStyle(
@@ -311,7 +351,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Transaction Summary
               const Text(
                 'Transaction Summary',
                 style: TextStyle(
@@ -320,7 +359,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              // Transaction Cards
               _buildTransactionCard(
                   'You have received \$3000 from Green Hills.'),
               const SizedBox(height: 8),
@@ -338,16 +376,16 @@ class _OverviewScreenState extends State<OverviewScreen> {
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.school_outlined),
             label: 'Schools',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.analytics_outlined),
             label: 'Analytics',
           ),
@@ -356,9 +394,9 @@ class _OverviewScreenState extends State<OverviewScreen> {
               backgroundColor: Colors.white,
               radius: 14,
               child: Text(
-                'K',
-                style: TextStyle(
-                  color: const Color(0xFF003A5D),
+                _firstLetter, // Dynamically set the first letter
+                style: const TextStyle(
+                  color: Color(0xFF003A5D),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -503,7 +541,6 @@ class LineChartSample extends StatelessWidget {
         minY: 0,
         maxY: 100,
         lineBarsData: [
-          // Blue line (Earnings)
           LineChartBarData(
             spots: const [
               FlSpot(0, 30),
@@ -524,7 +561,6 @@ class LineChartSample extends StatelessWidget {
               color: const Color(0xFF0C4B6E).withOpacity(0.1),
             ),
           ),
-          // Orange line (Spendings)
           LineChartBarData(
             spots: const [
               FlSpot(0, 10),

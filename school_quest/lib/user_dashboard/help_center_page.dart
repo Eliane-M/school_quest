@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MaterialApp(home: HelpCenterPage()));
+}
 
 class HelpCenterPage extends StatefulWidget {
   const HelpCenterPage({super.key});
@@ -9,6 +17,7 @@ class HelpCenterPage extends StatefulWidget {
 
 class _HelpCenterPageState extends State<HelpCenterPage> {
   int _currentIndex = 3;
+  String? _username; // To store the username
   final List<String> helpTopics = [
     "Best Schools in Rwanda",
     "How can I apply",
@@ -17,6 +26,22 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
     "Payment process",
     "About scholarships",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     if (_currentIndex != index) {
@@ -35,7 +60,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
           Navigator.pushReplacementNamed(context, '/search');
           break;
         case 3:
-          // We're already on the help center page, so do nothing
           break;
         case 4:
           Navigator.pushReplacementNamed(context, '/profile');
@@ -62,7 +86,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
               ),
               child: Column(
                 children: [
-                  // Header with close button only
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                     decoration: BoxDecoration(
@@ -78,11 +101,9 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-
                   Expanded(
                     child: Column(
                       children: [
-                        // Profile Image
                         Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 24, vertical: 20),
@@ -92,10 +113,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             backgroundImage:
                                 AssetImage('images/email_support.png'),
                           ),
-                          // SizedBox(height: 20),
                         ),
-
-                        // Email Field
                         Padding(
                           padding:
                               EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -122,8 +140,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-
-                        // Full Name Field
                         Padding(
                           padding:
                               EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -150,8 +166,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-
-                        // Message Field
                         Padding(
                           padding:
                               EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -180,8 +194,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-
-                        // Submit Button
                         Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 24, vertical: 16),
@@ -235,7 +247,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
               ),
               child: Column(
                 children: [
-                  // Header with status
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                     decoration: BoxDecoration(
@@ -271,12 +282,10 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-                        SizedBox(width: 40), // Balancing the close button
+                        SizedBox(width: 40),
                       ],
                     ),
                   ),
-
-                  // Chat Header
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
@@ -313,8 +322,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-
-                  // Timestamp
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
@@ -323,14 +330,11 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                           TextStyle(color: Colors.grey.shade500, fontSize: 12),
                     ),
                   ),
-
-                  // Chat Content
                   Expanded(
                     child: ListView(
                       controller: scrollController,
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       children: [
-                        // Support message
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
@@ -343,12 +347,11 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             constraints: BoxConstraints(maxWidth: 280),
                             child: Text(
                               "Thanks for contacting Unicash! This is Customer care, how can I help you?",
-                              style: TextStyle(fontSize: 14),
+                              style:
+                                  TextStyle(fontSize: 14),
                             ),
                           ),
                         ),
-
-                        // FAQ section
                         Container(
                           margin: EdgeInsets.only(bottom: 16),
                           padding: EdgeInsets.all(16),
@@ -376,8 +379,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             ],
                           ),
                         ),
-
-                        // Final message
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
@@ -397,8 +398,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-
-                  // Chat Input Bar
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
@@ -436,8 +435,6 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                       ],
                     ),
                   ),
-
-                  // Bottom padding/home indicator area
                   SizedBox(height: 10),
                   Container(
                     height: 5,
@@ -580,98 +577,45 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
   }
 
   Widget _buildBottomNavBar() {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        color: const Color(0xFF023652), // Updated to match the second code
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, -1),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          GestureDetector(
-            onTap: () => _onItemTapped(0),
-            child:
-                _buildNavItem(Icons.home_outlined, 'Home', _currentIndex == 0),
-          ),
-          GestureDetector(
-            onTap: () => _onItemTapped(1),
-            child: _buildNavItem(
-                Icons.dashboard_outlined, 'Overview', _currentIndex == 1),
-          ),
-          GestureDetector(
-            onTap: () => _onItemTapped(2),
-            child: _buildNavItem(Icons.search, 'Search', _currentIndex == 2),
-          ),
-          GestureDetector(
-            onTap: () => _onItemTapped(3),
-            child: _buildNavItem(
-                Icons.chat_bubble_outline, 'Chat', _currentIndex == 3),
-          ),
-          GestureDetector(
-            onTap: () => _onItemTapped(4),
-            child: _buildProfileNavItem(_currentIndex == 4),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-          size: 24,
+    return BottomNavigationBar(
+      backgroundColor: const Color(0xFF003A5D), // Match ProfilePage color
+      selectedItemColor: const Color(0xFFF9A86A),
+      unselectedItemColor: Colors.white,
+      showUnselectedLabels: true,
+      currentIndex: _currentIndex,
+      onTap: _onItemTapped,
+      type: BottomNavigationBarType.fixed,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          label: "Home",
         ),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard_outlined),
+          label: "Overview",
         ),
-      ],
-    );
-  }
-
-  Widget _buildProfileNavItem(bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: "Search",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat_bubble_outline),
+          label: "Chat",
+        ),
+        BottomNavigationBarItem(
+          icon: CircleAvatar(
+            backgroundColor:
+                _currentIndex == 4 ? Color(0xFFF9A86A) : Colors.transparent,
+            radius: 14,
             child: Text(
-              'K',
+              _username?.isNotEmpty == true ? _username![0].toUpperCase() : "U",
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.blueGrey[900],
-                fontSize: 14,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-        ),
-        Text(
-          'Profile',
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
+          label: "Profile",
         ),
       ],
     );

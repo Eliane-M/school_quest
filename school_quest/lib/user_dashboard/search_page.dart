@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -13,10 +17,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/search',
       routes: {
-        '/userdashboard': (context) => Scaffold(body: Center(child: Text('Home Page'))),
+        '/userdashboard': (context) =>
+            Scaffold(body: Center(child: Text('Home Page'))),
         '/search': (context) => SearchPage(),
-        '/chatpopup': (context) => Scaffold(body: Center(child: Text('Chat Page'))),
-        '/profile': (context) => Scaffold(body: Center(child: Text('Profile Page'))),
+        '/chatpopup': (context) =>
+            Scaffold(body: Center(child: Text('Chat Page'))),
+        '/profile': (context) =>
+            Scaffold(body: Center(child: Text('Profile Page'))),
       },
       home: SearchPage(),
     );
@@ -31,9 +38,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  // Current index set to 2 for Search page
   int _currentIndex = 2;
-  
+  String? _username; // To store the username
+
   final List<String> _suggestedSearches = [
     "Green Hills Academy",
     "Lycée de Kigali",
@@ -44,28 +51,42 @@ class _SearchPageState extends State<SearchPage> {
   ];
 
   List<String> get suggestedSearches => _suggestedSearches;
-  
-  // Navigation function
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
+
   void _onNavItemTapped(int index) {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
       });
-      
-      // Navigate based on index
+
       switch (index) {
-        case 0: // Home
+        case 0:
           Navigator.pushReplacementNamed(context, '/userdashboard');
           break;
-        case 1: // Overview
+        case 1:
           Navigator.pushReplacementNamed(context, '/overview');
           break;
-        case 2: // Search - Already here
+        case 2:
           break;
-        case 3: // Chat
+        case 3:
           Navigator.pushReplacementNamed(context, '/helpcenter');
           break;
-        case 4: // Profile
+        case 4:
           Navigator.pushReplacementNamed(context, '/profile');
           break;
       }
@@ -141,98 +162,50 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: const Color(0xFF023652),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            GestureDetector(
-              onTap: () => _onNavItemTapped(0),
-              child: _buildNavItem(Icons.home, 'Home', _currentIndex == 0),
-            ),
-            GestureDetector(
-              onTap: () => _onNavItemTapped(1),
-              child: _buildNavItem(Icons.dashboard_outlined, 'Overview', _currentIndex == 1),
-            ),
-            GestureDetector(
-              onTap: () => _onNavItemTapped(2),
-              child: _buildNavItem(Icons.search, 'Search', _currentIndex == 2),
-            ),
-            GestureDetector(
-              onTap: () => _onNavItemTapped(3),
-              child: _buildNavItem(Icons.chat_bubble_outline, 'Chat', _currentIndex == 3),
-            ),
-            GestureDetector(
-              onTap: () => _onNavItemTapped(4),
-              child: _buildProfileNavItem(_currentIndex == 4),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-          size: 24,
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF003A5D), // Match ProfilePage
+        selectedItemColor: const Color(0xFFF9A86A),
+        unselectedItemColor: Colors.white,
+        showUnselectedLabels: true,
+        currentIndex: _currentIndex,
+        onTap: _onNavItemTapped,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildProfileNavItem(bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            shape: BoxShape.circle,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            label: 'Overview',
           ),
-          child: Center(
-            child: Text(
-              'K',
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.blueGrey[900],
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: CircleAvatar(
+              backgroundColor:
+                  _currentIndex == 4 ? Color(0xFFF9A86A) : Colors.transparent,
+              radius: 14,
+              child: Text(
+                _username?.isNotEmpty == true
+                    ? _username![0].toUpperCase()
+                    : "U",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+            label: 'Profile',
           ),
-        ),
-        Text(
-          'Profile',
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

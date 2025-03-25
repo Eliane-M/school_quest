@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +13,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AdminHomePage(),
+      initialRoute: '/adminhomepage',
+      routes: {
+        '/adminhomepage': (context) => const AdminHomePage(),
+        '/schools': (context) =>
+            Scaffold(body: Center(child: Text('Schools Page'))),
+        '/analytics': (context) =>
+            Scaffold(body: Center(child: Text('Analytics Page'))),
+        '/adminprofile': (context) =>
+            Scaffold(body: Center(child: Text('Admin Profile Page'))),
+      },
+      home: const AdminHomePage(),
     );
   }
 }
@@ -25,6 +37,39 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   int _currentIndex = 0;
+  String _firstLetter = 'U'; // Default letter until username is fetched
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsername();
+  }
+
+  Future<void> _fetchUsername() async {
+    try {
+      // Get the current user from Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Fetch the user's data from Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          String? username = userDoc.get('name') as String?;
+          if (username != null && username.isNotEmpty) {
+            setState(() {
+              _firstLetter = username[0].toUpperCase();
+            });
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+      // Keep default letter if there's an error
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -67,16 +112,16 @@ class _AdminHomePageState extends State<AdminHomePage> {
       currentIndex: _currentIndex,
       onTap: _onItemTapped,
       type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
+      items: [
+        const BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           label: "Home",
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.school_outlined),
           label: "Schools",
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.analytics_outlined),
           label: "Analytics",
         ),
@@ -85,9 +130,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
             backgroundColor: Colors.white,
             radius: 14,
             child: Text(
-              'K',
-              style: TextStyle(
-                color: const Color(0xFF003A5D),
+              _firstLetter, // Dynamically set the first letter
+              style: const TextStyle(
+                color: Color(0xFF003A5D),
                 fontWeight: FontWeight.bold,
               ),
             ),

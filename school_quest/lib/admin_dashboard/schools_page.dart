@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -11,25 +16,59 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: '/schoolsdashboard',
+      routes: {
+        '/schoolsdashboard': (context) => SchoolsDashboard(),
+        '/schoollist': (context) =>
+            Scaffold(body: Center(child: Text('School List Page'))),
+        '/admindashboard': (context) =>
+            Scaffold(body: Center(child: Text('Admin Dashboard'))),
+        '/analytics': (context) =>
+            Scaffold(body: Center(child: Text('Analytics Page'))),
+        '/adminprofile': (context) =>
+            Scaffold(body: Center(child: Text('Admin Profile Page'))),
+      },
       home: SchoolsDashboard(),
     );
   }
 }
 
-class SchoolsDashboard extends StatelessWidget {
+class SchoolsDashboard extends StatefulWidget {
   const SchoolsDashboard({super.key});
+
+  @override
+  State<SchoolsDashboard> createState() => _SchoolsDashboardState();
+}
+
+class _SchoolsDashboardState extends State<SchoolsDashboard> {
+  String? _username; // To store the username
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F9FF), // Match background color
+      backgroundColor: const Color(0xFFF2F9FF),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Registered Schools Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -37,7 +76,7 @@ class SchoolsDashboard extends StatelessWidget {
                     "Registered Schools",
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 16, // Reduced font size
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -54,64 +93,60 @@ class SchoolsDashboard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12, // Reduced padding
-                            vertical: 6, // Reduced padding
+                            horizontal: 12,
+                            vertical: 6,
                           ),
                         ),
                         child: const Text(
                           "View All",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14, // Reduced font size
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      // const SizedBox(width: 8),
-                      // ElevatedButton(
-                      //   onPressed: () {},
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: const Color(0xFFF9A86A), // Orange
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(12),
-                      //     ),
-                      //     padding: const EdgeInsets.symmetric(
-                      //       horizontal: 12, // Reduced padding
-                      //       vertical: 6, // Reduced padding
-                      //     ),
-                      //   ),
-                      //   child: const Text(
-                      //     "Add User",
-                      //     style: TextStyle(
-                      //       color: Colors.white,
-                      //       fontSize: 14, // Reduced font size
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              // List of Schools
-              ...List.generate(
-                3,
-                (index) => SchoolCard(
-                  schoolName: index % 2 == 0
-                      ? "Green Hills Academy"
-                      : "Riviera High School",
-                  description:
-                      "A private school fostering excellence and innovation in education.",
-                ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('schools')
+                    .limit(3) // Limiting to 3 schools like the original
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading schools'));
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final schools = snapshot.data!.docs;
+
+                  if (schools.isEmpty) {
+                    return const Center(child: Text('No schools found'));
+                  }
+
+                  return Column(
+                    children: schools.map((schoolDoc) {
+                      final school = schoolDoc.data() as Map<String, dynamic>;
+                      return SchoolCard(
+                        schoolName: school['name'] ?? 'Unknown School',
+                        description: school['description'] ??
+                            'No description available',
+                      );
+                    }).toList(),
+                  );
+                },
               ),
               const SizedBox(height: 24),
-
-              // Schools Payments Section
               const Text(
                 "Schools Payments",
                 style: TextStyle(
-                  fontSize: 16, // Reduced font size to match
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -143,12 +178,11 @@ class SchoolsDashboard extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(username: _username),
     );
   }
 }
 
-// School Card Widget
 class SchoolCard extends StatelessWidget {
   final String schoolName;
   final String description;
@@ -226,7 +260,6 @@ class SchoolCard extends StatelessWidget {
   }
 }
 
-// Payment Row Widget
 class PaymentRow extends StatelessWidget {
   final String school;
   final String amount;
@@ -304,9 +337,10 @@ class PaymentRow extends StatelessWidget {
   }
 }
 
-// Bottom Navigation Bar
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final String? username;
+
+  const BottomNavBar({super.key, this.username});
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -345,7 +379,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
       type: BottomNavigationBarType.fixed,
-      items: const [
+      items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           label: "Home",
@@ -360,12 +394,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
         BottomNavigationBarItem(
           icon: CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor:
+                _selectedIndex == 3 ? Color(0xFFF9A86A) : Colors.transparent,
             radius: 14,
             child: Text(
-              'K',
+              widget.username?.isNotEmpty == true
+                  ? widget.username![0].toUpperCase()
+                  : "U",
               style: TextStyle(
-                color: const Color(0xFF003A5D),
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),

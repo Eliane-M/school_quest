@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:school_quest/signin_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:school_quest/signin_page.dart'; // Assuming this exists
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,12 +25,11 @@ class MyApp extends StatelessWidget {
             Scaffold(body: Center(child: Text('Search Page'))),
         '/helpcenter': (context) =>
             Scaffold(body: Center(child: Text('Chat Page'))),
-        '/profile': (context) => Scaffold(body: Center(child: Text('Profile Page'))),
+        '/profile': (context) => UserEditProfilePage(),
         '/signin': (context) => SignInScreen(),
         '/overview': (context) =>
             Scaffold(body: Center(child: Text('Overview Page'))),
       },
-      home: UserEditProfilePage(),
     );
   }
 }
@@ -35,15 +42,30 @@ class UserEditProfilePage extends StatefulWidget {
 }
 
 class _UserEditProfilePageState extends State<UserEditProfilePage> {
-  final TextEditingController _usernameController =
-      TextEditingController(text: "John Cena");
-  final TextEditingController _emailController =
-      TextEditingController(text: "xxxxxxxxx@gmail.com");
+  // Initialize Firebase Auth
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
+  // Text controllers with initial values from current user
+  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
   final TextEditingController _phoneController =
       TextEditingController(text: "xxx xxx xxx");
   String _selectedGender = "Male";
   DateTime? _selectedDate;
-  int _currentIndex = 4; // Profile tab selected by default (changed from 3 to 4)
+  int _currentIndex = 4;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get current user data
+    User? currentUser = _auth.currentUser;
+    _usernameController = TextEditingController(
+      text: currentUser?.displayName ?? "Unknown User"
+    );
+    _emailController = TextEditingController(
+      text: currentUser?.email ?? "No email"
+    );
+  }
 
   void _onNavItemTapped(int index) {
     if (_currentIndex != index) {
@@ -65,10 +87,36 @@ class _UserEditProfilePageState extends State<UserEditProfilePage> {
           Navigator.pushReplacementNamed(context, '/helpcenter');
           break;
         case 4:
-          // Already on the profile page (or edit profile page)
           break;
       }
     }
+  }
+
+  // Function to update user profile
+  Future<void> _updateProfile() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.updateDisplayName(_usernameController.text);
+        // Optionally update email if your app allows it
+        // await user.updateEmail(_emailController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
   }
 
   @override
@@ -144,7 +192,7 @@ class _UserEditProfilePageState extends State<UserEditProfilePage> {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Email Adress',
+                    'Email Address',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black54,
@@ -153,6 +201,7 @@ class _UserEditProfilePageState extends State<UserEditProfilePage> {
                   const SizedBox(height: 5),
                   TextField(
                     controller: _emailController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
@@ -290,9 +339,7 @@ class _UserEditProfilePageState extends State<UserEditProfilePage> {
                   ),
                   const SizedBox(height: 40),
                   ElevatedButton(
-                    onPressed: () {
-                      // Save profile logic
-                    },
+                    onPressed: _updateProfile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF00334A),
                       minimumSize: const Size(double.infinity, 50),
@@ -315,7 +362,7 @@ class _UserEditProfilePageState extends State<UserEditProfilePage> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(), // Moved to a separate method
+      bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 

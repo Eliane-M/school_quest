@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MaterialApp(home: SchoolListingPage()));
+}
 
 class SchoolListingPage extends StatefulWidget {
   const SchoolListingPage({super.key});
@@ -10,30 +17,44 @@ class SchoolListingPage extends StatefulWidget {
 }
 
 class _SchoolListingPageState extends State<SchoolListingPage> {
-  // Current index set to 1 for Overview page
   int _currentIndex = 1;
-  
-  // Navigation function
+  String? _username; // To store the username
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Load user data from Firebase Authentication
+  Future<void> _loadUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _username = user.displayName ?? "Unknown User";
+      });
+    }
+  }
+
   void _onNavItemTapped(int index) {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
       });
-      
-      // Navigate based on index
+
       switch (index) {
-        case 0: // Home
+        case 0:
           Navigator.pushReplacementNamed(context, '/userdashboard');
           break;
-        case 1: // Overview - Already here
+        case 1:
           break;
-        case 2: // Search
+        case 2:
           Navigator.pushReplacementNamed(context, '/search');
           break;
-        case 3: // Chat
+        case 3:
           Navigator.pushReplacementNamed(context, '/helpcenter');
           break;
-        case 4: // Profile
+        case 4:
           Navigator.pushReplacementNamed(context, '/profile');
           break;
       }
@@ -53,7 +74,6 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Search bar
                     Container(
                       height: 50,
                       decoration: BoxDecoration(
@@ -87,10 +107,7 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                         ),
                       ),
                     ),
-                    
                     const SizedBox(height: 20),
-                    
-                    // Table headers
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -138,13 +155,12 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                         ],
                       ),
                     ),
-                    
                     const SizedBox(height: 10),
-                    
-                    // School list
                     Expanded(
                       child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('schools').snapshots(),
+                        stream: FirebaseFirestore.instance
+                            .collection('schools')
+                            .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
                             return const Center(child: Text('Error loading schools'));
@@ -152,13 +168,14 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                           if (!snapshot.hasData) {
                             return const Center(child: CircularProgressIndicator());
                           }
-                          
+
                           final schools = snapshot.data!.docs;
-                          
+
                           return ListView.builder(
                             itemCount: schools.length,
                             itemBuilder: (context, index) {
-                              final school = schools[index].data() as Map<String, dynamic>;
+                              final school =
+                                  schools[index].data() as Map<String, dynamic>;
                               return SchoolCard(
                                 name: school['name'] ?? 'School',
                                 location: school['location'] ?? 'Kigali',
@@ -173,103 +190,54 @@ class _SchoolListingPageState extends State<SchoolListingPage> {
                 ),
               ),
             ),
-            
-            // Updated Bottom navigation bar
-            Container(
-              height: 60,
-              decoration: BoxDecoration(
-                color: const Color(0xFF023652),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, -1),
+            BottomNavigationBar(
+              backgroundColor: const Color(0xFF003A5D), // Match ProfilePage
+              selectedItemColor: const Color(0xFFF9A86A),
+              unselectedItemColor: Colors.white,
+              showUnselectedLabels: true,
+              currentIndex: _currentIndex,
+              onTap: _onNavItemTapped,
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.dashboard_outlined),
+                  label: 'Overview',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble_outline),
+                  label: 'Chat',
+                ),
+                BottomNavigationBarItem(
+                  icon: CircleAvatar(
+                    backgroundColor: _currentIndex == 4
+                        ? Color(0xFFF9A86A)
+                        : Colors.transparent,
+                    radius: 14,
+                    child: Text(
+                      _username?.isNotEmpty == true
+                          ? _username![0].toUpperCase()
+                          : "U",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    onTap: () => _onNavItemTapped(0),
-                    child: _buildNavItem(Icons.home, 'Home', _currentIndex == 0),
-                  ),
-                  GestureDetector(
-                    onTap: () => _onNavItemTapped(1),
-                    child: _buildNavItem(Icons.dashboard_outlined, 'Overview', _currentIndex == 1),
-                  ),
-                  GestureDetector(
-                    onTap: () => _onNavItemTapped(2),
-                    child: _buildNavItem(Icons.search, 'Search', _currentIndex == 2),
-                  ),
-                  GestureDetector(
-                    onTap: () => _onNavItemTapped(3),
-                    child: _buildNavItem(Icons.chat_bubble_outline, 'Chat', _currentIndex == 3),
-                  ),
-                  GestureDetector(
-                    onTap: () => _onNavItemTapped(4),
-                    child: _buildProfileNavItem(_currentIndex == 4),
-                  ),
-                ],
-              ),
+                  label: 'Profile',
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-  
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-          size: 24,
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildProfileNavItem(bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              'K',
-              style: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF023652),
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        Text(
-          'Profile',
-          style: TextStyle(
-            color: isSelected ? const Color(0xFFF9A86A) : Colors.white,
-            fontSize: 10,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -278,7 +246,7 @@ class SchoolCard extends StatelessWidget {
   final String name;
   final String location;
   final bool isOpen;
-  
+
   const SchoolCard({
     super.key,
     required this.name,
