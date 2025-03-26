@@ -26,7 +26,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       // Create Dynamic Link parameters
       final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: 'https://shoolquest.page.link',
+        uriPrefix: 'https://schoolquest.page.link',
         link: Uri.parse('https://schoolquest.page.link/reset?email=${_emailController.text.trim()}'),
         androidParameters: const AndroidParameters(
           packageName: 'com.example.school_quest',
@@ -41,7 +41,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password reset email sent successfully')),
       );
-      Navigator.pushNamed(context, '/emailverification');
+      Navigator.pushNamed(context, '/successfulset');
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
