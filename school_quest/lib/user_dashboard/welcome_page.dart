@@ -156,9 +156,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                   SizedBox(
                     height: 250,
                     child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('schools')
-                          .snapshots(),
+                      stream: FirebaseFirestore.instance.collection('schools').snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return const Center(child: Text('Error loading schools'));
@@ -172,8 +170,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                           physics: const BouncingScrollPhysics(),
                           itemCount: schools.length,
                           itemBuilder: (context, index) {
-                            final school =
-                                schools[index].data() as Map<String, dynamic>;
+                            final school = schools[index].data() as Map<String, dynamic>;
                             return schoolCard(
                               school['name'] ?? 'School',
                               school['image'] ?? 'https://via.placeholder.com/150',
@@ -191,9 +188,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                   ),
                   const SizedBox(height: 20),
                   StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('reviews')
-                        .snapshots(),
+                    stream: FirebaseFirestore.instance.collection('reviews').snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return const Center(child: Text('Error loading reviews'));
@@ -204,8 +199,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
                       final reviews = snapshot.data!.docs;
                       return Column(
                         children: reviews.map((reviewDoc) {
-                          final review =
-                              reviewDoc.data() as Map<String, dynamic>;
+                          final review = reviewDoc.data() as Map<String, dynamic>;
                           return reviewCard(
                             review['schoolName'] ?? 'Unknown School',
                             review['review'] ?? 'No review available',
@@ -288,7 +282,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-            child: Image.network(
+            child: Image.asset(
               image,
               height: 100,
               width: double.infinity,
@@ -348,7 +342,7 @@ class _SchoolHomePageState extends State<SchoolHomePage> {
       child: ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Image.network(
+          child: Image.asset(
             image,
             width: 60,
             height: 60,
