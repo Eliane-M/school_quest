@@ -1,0 +1,2 @@
+/Users/Shema/Documents/projects/school_quest/school_quest/android/app/.cxx/Debug/i303q6h3/x86/CMakeFiles/edit_cache.dir
+/Users/Shema/Documents/projects/school_quest/school_quest/android/app/.cxx/Debug/i303q6h3/x86/CMakeFiles/rebuild_cache.dir

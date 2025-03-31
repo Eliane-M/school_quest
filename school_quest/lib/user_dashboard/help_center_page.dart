@@ -27,6 +27,22 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
     "About scholarships",
   ];
 
+  // Example data for schools
+  final Map<String, String> schoolDetails = {
+    "Best Schools in Rwanda":
+        "These are the top-rated schools in Rwanda based on academic performance and facilities.",
+    "How can I apply":
+        "You can apply through the official SchoolQuest platform by filling out the application form.",
+    "Which applications are open":
+        "Currently, applications are open for primary and secondary schools.",
+    "How to switch accounts":
+        "Go to the profile section and select 'Switch Account' to log in with a different account.",
+    "Payment process":
+        "Payments can be made via mobile money or bank transfer through the SchoolQuest platform.",
+    "About scholarships":
+        "Scholarships are available for top-performing students. Check the scholarships section for more details.",
+  };
+
   @override
   void initState() {
     super.initState();
@@ -201,19 +217,36 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Perform form submission logic
+                                print("Form submitted!");
+
+                                // Show a success message
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        "Your message has been sent successfully!"),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+
+                                // Close the modal bottom sheet
+                                Navigator.pop(context);
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF00427A),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Text("Submit",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  )),
+                              child: Text(
+                                "Submit",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -347,8 +380,7 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                             constraints: BoxConstraints(maxWidth: 280),
                             child: Text(
                               "Thanks for contacting Unicash! This is Customer care, how can I help you?",
-                              style:
-                                  TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 14),
                             ),
                           ),
                         ),
@@ -517,13 +549,55 @@ class _HelpCenterPageState extends State<HelpCenterPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
-                children: helpTopics
-                    .map((topic) => ListTile(
-                          title: Text(topic),
-                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                          onTap: () {},
-                        ))
-                    .toList(),
+                children: helpTopics.map((topic) {
+                  return ExpansionTile(
+                    title: Text(
+                      topic,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF003A5D), // Darker tone for text
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(
+                          0xFFF9A86A), // Highlight color for the dropdown icon
+                    ),
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 4.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset:
+                                  Offset(0, 3), // Subtle shadow for elevation
+                            ),
+                          ],
+                          border: Border.all(
+                            color: Color(0xFFF9A86A), // Highlight border color
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          schoolDetails[topic] ?? "No details available.",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF003A5D), // Darker tone for text
+                            height: 1.5, // Line height for better readability
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(height: 30),

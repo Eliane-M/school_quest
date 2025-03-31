@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/Shema/Downloads/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/Shema/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/Shema/Documents/projects/school_quest/school_quest/android/app/.cxx/Debug/i303q6h3/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/Shema/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/Shema/Documents/projects/school_quest/school_quest/android/app/.cxx/Debug/i303q6h3/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
